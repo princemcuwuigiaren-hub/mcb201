@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en" data-pal="green" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#000000">
+<title>MCB 201 CBT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0e0c;--s1:#181612;--s2:#221f19;--bd:#2f2b22;--tx:#f1ece1;--mu:#9b9383;--am:#e9a93b;--amd:#35290f;--ok:#6fbf8a;--okb:#13271a;--bad:#e2705f;--badb:#2d1511;--ink:#1a1405}
+[data-theme=light]{--bg:#f6f1e7;--s1:#fffdf8;--s2:#efe8d8;--bd:#ddd3bd;--tx:#22201a;--mu:#6e6757;--am:#b9770e;--amd:#f6e4bf;--ok:#2e7d4f;--okb:#dcefe2;--bad:#b3392a;--badb:#f8dfd9;--ink:#fff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:400 15px/1.5 Inter,system-ui,sans-serif}
+#app{max-width:560px;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) 18px calc(92px + env(safe-area-inset-bottom))}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:600;margin:0;letter-spacing:-.01em}
+h1{font-size:34px;line-height:1.1}h2{font-size:21px}h3{font-size:17px}
+.mono,.tm,.k,.eb{font-family:'JetBrains Mono',ui-monospace,monospace}
+.eb{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--am)}
+.mu{color:var(--mu)}.sm{font-size:13px}
+svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+.row{display:flex;align-items:center;gap:10px}.sp{justify-content:space-between}
+.ib{width:42px;height:42px;border-radius:12px;border:1px solid var(--bd);background:var(--s1);display:grid;place-items:center}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:16px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}
+.stat{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:12px}
+.stat b{display:block;font:500 22px 'JetBrains Mono',monospace}
+.stat span{font-size:12px;color:var(--mu)}
+.sec{margin:26px 0 10px}
+.tile{width:100%;text-align:left;display:flex;gap:14px;align-items:center;background:var(--s1);border:1px solid var(--bd);border-radius:16px;padding:16px;margin-bottom:10px}
+.tile .ic{width:44px;height:44px;border-radius:12px;background:var(--amd);color:var(--am);display:grid;place-items:center;flex:none}
+.tile b{display:block;font-weight:600}.tile.off{opacity:.5;pointer-events:none}
+.trow{width:100%;text-align:left;padding:12px 0;border-bottom:1px solid var(--bd)}
+.bar{height:6px;border-radius:6px;background:var(--s2);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;background:var(--am);border-radius:6px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:8px 12px;border-radius:999px;border:1px solid var(--bd);background:var(--s1);font-size:13px}
+.chip.on{background:var(--amd);border-color:var(--am);color:var(--am)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px}
+.seg button{padding:11px 4px;border-radius:12px;border:1px solid var(--bd);background:var(--s1);font:500 13px 'JetBrains Mono',monospace}
+.seg button.on{background:var(--am);border-color:var(--am);color:var(--ink)}
+.btn{width:100%;padding:15px;border-radius:14px;background:var(--am);color:var(--ink);font-weight:600;display:flex;justify-content:center;gap:8px;align-items:center}
+.btn.g{background:var(--s1);color:var(--tx);border:1px solid var(--bd)}.btn.off{opacity:.4;pointer-events:none}
+.stk{display:grid;gap:10px;margin-top:18px}
+#nav{position:fixed;left:0;right:0;bottom:0;background:var(--s1);border-top:1px solid var(--bd);padding:8px 12px calc(8px + env(safe-area-inset-bottom));justify-content:center;gap:6px}
+#nav button{flex:1;max-width:170px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px;border-radius:12px;font-size:12px;color:var(--mu)}
+#nav button.on{color:var(--am);background:var(--amd)}
+.top{display:flex;align-items:center;gap:12px}
+.tm{font-size:17px;padding:8px 12px;border-radius:10px;background:var(--s1);border:1px solid var(--bd);margin-left:auto}
+.tm.low{color:var(--bad);border-color:var(--bad)}
+.pg{height:4px;background:var(--s2);border-radius:4px;margin:14px 0 18px;overflow:hidden}.pg i{display:block;height:100%;background:var(--am)}
+.q{font-family:Fraunces,Georgia,serif;font-size:21px;line-height:1.35;margin:10px 0 18px}
+.opt{width:100%;text-align:left;display:flex;gap:12px;align-items:flex-start;padding:13px;border-radius:14px;border:1px solid var(--bd);background:var(--s1);margin-bottom:10px}
+.opt .k{width:26px;height:26px;border-radius:8px;background:var(--s2);display:grid;place-items:center;font-size:12px;flex:none}
+.opt.sel{border-color:var(--am);background:var(--amd)}.opt.sel .k{background:var(--am);color:var(--ink)}
+.opt.ok{border-color:var(--ok);background:var(--okb)}.opt.ok .k{background:var(--ok);color:var(--ink)}
+.opt.bad{border-color:var(--bad);background:var(--badb)}.opt.bad .k{background:var(--bad);color:var(--ink)}
+.opt.dim{opacity:.55}
+.fb{border-radius:14px;padding:13px;margin:4px 0 12px;border:1px solid}.fb p{margin:4px 0 0}
+.fb.ok{background:var(--okb);border-color:var(--ok)}.fb.bad{background:var(--badb);border-color:var(--bad)}
+.foot{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--bd);padding:10px 18px calc(10px + env(safe-area-inset-bottom))}
+.foot>div{max-width:560px;margin:0 auto;display:flex;gap:8px}
+.foot .btn{flex:1}.foot .ib{flex:none;width:50px;height:50px}.foot .ib.fl{color:var(--am);border-color:var(--am)}
+.ring{display:grid;place-items:center;margin:18px 0}.ring div{position:absolute;text-align:center}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:9}
+.sheet{width:100%;max-width:560px;background:var(--s1);border:1px solid var(--bd);border-radius:20px 20px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom));max-height:80vh;overflow:auto}
+.gr{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:14px 0}
+.gr button{aspect-ratio:1;border-radius:10px;border:1px solid var(--bd);background:var(--s2);font:500 13px 'JetBrains Mono',monospace}
+.gr .an{background:var(--amd);border-color:var(--am);color:var(--am)}.gr .fl{outline:2px solid var(--am)}.gr .cu{background:var(--am);color:var(--ink)}
+.rv{padding:16px;margin-bottom:12px}.rv .opt{padding:10px 12px;margin-bottom:6px;font-size:14px}
+.tag{font:500 10px 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;margin-left:auto;white-space:nowrap}
+.hist{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--bd)}
+.fb.hint{background:var(--amd);border-color:var(--am)}
+.lk{margin-top:8px;color:var(--am);font-weight:600;display:inline-flex;gap:6px;align-items:center}
+.opt.rm{opacity:.35;text-decoration:line-through;pointer-events:none}
+.nt h3{margin:24px 0 8px}.nt p{margin:0 0 12px}
+.li{padding:2px 0 10px 14px;border-left:2px solid var(--am);margin:0 0 8px}
+.li b{display:block;font-weight:600;margin-bottom:2px}
+.danger{color:var(--bad)!important;border-color:var(--bad)!important}
+[data-pal=green]:not([data-theme=light]){--bg:#000;--s1:#080d09;--s2:#101812;--bd:#1b2a1f;--tx:#e8f3ec;--mu:#86a08e;--am:#4ade80;--amd:#0b2616;--ok:#2dd4bf;--okb:#06231f;--bad:#ff6b6b;--badb:#2a1010;--ink:#021208}
+[data-pal=green][data-theme=light]{--bg:#f2f7f3;--s1:#fff;--s2:#e4eee7;--bd:#cfdcd3;--tx:#10201a;--mu:#5a6e62;--am:#157a3a;--amd:#d6f0dd;--ok:#0f766e;--okb:#d5f1ec;--bad:#b3392a;--badb:#f8dfd9;--ink:#fff}
+.sw{width:44px;height:44px;border-radius:12px;border:1px solid var(--bd);flex:none}
+.tile.on{border-color:var(--am);background:var(--amd)}
+.inp{width:100%;padding:13px;border-radius:12px;border:1px solid var(--bd);background:var(--s1);color:var(--tx);font:inherit;margin-top:10px}
+textarea.inp{min-height:120px;resize:vertical;font:12px/1.4 'JetBrains Mono',ui-monospace,monospace}
+.foot .inp{margin:0;flex:1;min-width:0;height:50px}
+.lbr{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--bd)}
+.lbr .rk{width:26px;font:500 15px 'JetBrains Mono',monospace;color:var(--mu)}
+.lbr.me{background:var(--amd);margin:0 -10px;padding:12px 10px;border-radius:12px;border-bottom-color:transparent}
+.msg{max-width:84%;margin:0 0 10px;padding:9px 12px;border-radius:14px;background:var(--s1);border:1px solid var(--bd);word-break:break-word;white-space:pre-wrap}
+.msg.me{margin-left:auto;background:var(--amd);border-color:var(--am)}
+.msg .who{font:500 11px 'JetBrains Mono',monospace;color:var(--am);margin-bottom:2px}
+.msg .tt{font-size:11px;color:var(--mu);margin-top:3px;white-space:normal}
+html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+img,svg{-webkit-user-drag:none;user-drag:none}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<input type="file" id="imp" accept="application/json,.json" hidden>
+<nav id="nav" class="row"></nav>
+<script>
+const T=["Aseptic Technique","Gram Staining","Gram-Positive vs Gram-Negative","Prokaryotes vs Eukaryotes","Microbial Media","Autoclave Operation","Microbial Growth Curve","Introduction and Structures","Shapes of Microorganisms","Sterilization Methods","Medical Microbiology","Microbial Genetics"];
+/* [topic, question, correct, wrong1, wrong2, wrong3, explanation] — correct answer is always first and shuffled at runtime */
+const Q=[
+[0,"Which statement best defines aseptic technique?","Practices that prevent contamination of sterile areas or materials by microorganisms","Heating a sample until all organisms are dead","Growing microbes on nutrient media","Staining bacteria to identify them","Aseptic technique is a set of practices designed to prevent contamination of sterile areas or materials."],
+[0,"What is essential before performing any aseptic procedure?","Hand hygiene with soap and water or an alcohol-based sanitizer","Leaving instruments open on the bench","Switching off all ventilation","Adding antibiotics to the work surface","Thorough hand hygiene is the first requirement of aseptic work."],
+[0,"A sterile field is maintained by:","Using sterile drapes or barriers and placing only sterile items on it","Covering the bench with any clean cloth","Placing open cultures on the edge of the bench","Spraying gloves once at the start","Only sterile items belong on or within the designated sterile area."],
+[0,"Why are aseptic gowning and gloving important?","They minimize shedding of microorganisms from skin, hair and clothing","They sterilize the instruments","They increase airflow in the room","They dissolve biohazardous waste","Correct gowning and gloving lowers the risk of contamination from the worker."],
+[0,"Where should sharps and biohazardous waste be placed?","Designated containers, following disposal protocols","The ordinary waste bin","Down the laboratory sink","Back inside the sterile field","Proper disposal prevents the spread of microorganisms."],
+[0,"Which environmental control supports aseptic work?","Minimizing airflow disruptions and regularly disinfecting work areas","Keeping windows open for fresh air","Allowing surfaces to stay uncleaned between runs","Maximizing foot traffic around the field","Environmental control includes limiting airflow disruption, controlling temperature and humidity, and cleaning."],
+[0,"Which methods are used to sterilize items that contact sterile areas or samples?","Autoclaving, chemical disinfection or sterile filtration","Rinsing with tap water","Wiping with a dry cloth","Leaving them exposed to room air","Instruments must be sterilized or sanitized by methods such as these."],
+[1,"Who developed the Gram staining method, and in which year?","Hans Christian Gram, 1884","Louis Pasteur, 1864","Robert Koch, 1910","Alexander Fleming, 1928","The method was developed by Danish bacteriologist Hans Christian Gram in 1884."],
+[1,"What is the correct order of reagents in the Gram stain?","Crystal violet, Gram’s iodine, decolorizer, safranin","Safranin, Gram’s iodine, ethanol, crystal violet","Crystal violet, safranin, Gram’s iodine, ethanol","Gram’s iodine, crystal violet, acetone, safranin","Primary stain, mordant, decolorizer, then counterstain."],
+[1,"What is the role of Gram’s iodine?","A mordant that helps crystal violet form a complex retained in peptidoglycan","The primary stain","The decolorizing agent","The counterstain","The mordant increases the retention of the crystal violet complex."],
+[1,"Which agent is usually used to decolorize the smear?","Ethanol or acetone","Safranin","Crystal violet","Gram’s iodine","Alcohol or acetone differentiates Gram-positive from Gram-negative cells."],
+[1,"After the full procedure, how do Gram-negative bacteria appear?","Pink or red","Purple","Colorless","Yellow","They lose the crystal violet complex and take up the safranin counterstain."],
+[1,"Which reagent is the counterstain?","Safranin or basic fuchsin","Crystal violet","Gram’s iodine","Acetone","The counterstain colors the decolorized Gram-negative cells."],
+[1,"Why do Gram-negative bacteria lose the crystal violet-iodine complex?","The decolorizer disrupts their outer membrane and their peptidoglycan layer is thin","Their thick peptidoglycan traps the dye","They have teichoic acids that bind iodine","They have no cell membrane","Gram-negative cells have thin peptidoglycan surrounded by an outer membrane that the decolorizer disrupts."],
+[1,"What is heat fixation used for when preparing a smear?","To help the bacteria adhere to the slide","To stain the cells purple","To remove the outer membrane","To sterilize the stain","Heat fixation adheres the dried smear to the slide."],
+[2,"What fraction of the Gram-positive cell wall can be peptidoglycan?","Up to about 90%","About 10%","About 50%","Less than 1%","Gram-positive walls have a thick peptidoglycan layer."],
+[2,"Which description fits the Gram-negative cell wall?","Thin peptidoglycan (about 10%) plus an outer membrane containing LPS","Thick peptidoglycan with no outer membrane","No peptidoglycan at all","A wall made mainly of chitin","The outer membrane contains lipopolysaccharides and lipoproteins."],
+[2,"Teichoic and lipoteichoic acids are characteristic of:","Gram-positive cell walls","The Gram-negative outer membrane","Eukaryotic nuclei","Viral capsids","They are interspersed in the thick peptidoglycan and add rigidity and stability."],
+[2,"Lipopolysaccharide (LPS) is best described as:","A potent endotoxin in the Gram-negative outer membrane","A mordant used in staining","A Gram-positive wall polymer","An antibiotic","LPS plays roles in pathogenesis and immune evasion."],
+[2,"What is the function of porins?","They regulate the passage of molecules through the outer membrane","They synthesize peptidoglycan","They carry out protein synthesis","They store genetic material","Porins in the outer membrane control entry of molecules."],
+[2,"Why are Gram-positive bacteria generally more susceptible to penicillin and vancomycin?","These drugs target cell wall synthesis and the thick peptidoglycan is not shielded by an outer membrane","They have efflux pumps","They lack a cell wall","They have an outer membrane barrier","Cell wall synthesis inhibitors act well on Gram-positive organisms."],
+[2,"Which features make Gram-negative bacteria often more resistant to antibiotics?","An outer membrane barrier and efflux pumps","A thick peptidoglycan layer","Teichoic acids","Absence of a cell membrane","The outer membrane limits drug entry and efflux pumps remove antibiotics."],
+[2,"Which group may trigger strong inflammatory responses because of LPS?","Gram-negative bacteria","Gram-positive bacteria","Eukaryotic cells","Spore-forming fungi","Their outer membrane LPS can contribute to severe infections."],
+[3,"Where is the genetic material of a prokaryotic cell located?","In the nucleoid, which is not membrane-enclosed","Inside a membrane-bound nucleus","Inside mitochondria","Inside the Golgi apparatus","Prokaryotes lack a true nucleus."],
+[3,"Prokaryotic DNA is typically:","A single circular chromosome without histones","Multiple linear chromosomes with histones","Organized into chromatin","Full of introns","Histones, chromatin and introns are features of eukaryotes."],
+[3,"Which feature is often found in eukaryotic genes but not in prokaryotic genes?","Introns","Operons of circular DNA","Binary fission","A nucleoid","Introns are non-coding regions removed during RNA processing."],
+[3,"What is the typical size range of prokaryotic cells?","0.1 to 5 micrometers","10 to 100 micrometers","100 to 500 micrometers","1 to 5 millimeters","Eukaryotic cells are larger, about 10 to 100 micrometers."],
+[3,"How do prokaryotes mainly reproduce?","Binary fission","Mitosis","Meiosis","Cytokinesis after nuclear division","Binary fission gives two daughter cells with identical genetic material."],
+[3,"Which structures are absent from prokaryotic cells?","Mitochondria, endoplasmic reticulum, Golgi apparatus and lysosomes","Ribosomes and DNA","A plasma membrane","A cell wall in all species","Prokaryotes lack membrane-bound organelles."],
+[3,"What is the main component of a plant cell wall?","Cellulose","Peptidoglycan","Chitin","Lipopolysaccharide","Some eukaryotic cells, such as plant cells, have a cellulose wall."],
+[3,"What is the role of the Golgi apparatus?","Modifies and packages proteins for secretion","Produces ATP","Carries out intracellular digestion","Stores the nucleoid","Mitochondria make ATP and lysosomes digest, while the Golgi packages proteins."],
+[4,"Nutrient agar is made of:","Beef extract, peptone and agar","Blood and serum only","Peptone and glucose only","Agar and crystal violet","It is a solid, general-purpose medium."],
+[4,"How does nutrient broth differ from nutrient agar?","It is liquid because it lacks agar","It contains blood","It is selective for Gram-negative cells","It is used only for transport","Broth propagates organisms in suspension."],
+[4,"What do selective media do?","Promote growth of specific microorganisms while inhibiting others","Preserve viability during transport","Remove all oxygen","Add nothing but water","Selective media favor wanted organisms and inhibit the rest."],
+[4,"MacConkey agar selects for:","Gram-negative bacteria","Staphylococcus species","Strict anaerobes only","Fungi only","It is the example given of a medium selecting for Gram-negative bacteria."],
+[4,"Mannitol Salt agar selects for:","Staphylococcus species","Gram-negative bacteria","Spirochetes","Viruses","It is a selective medium for Staphylococcus."],
+[4,"Blood agar is a differential medium because it distinguishes bacteria by:","Their ability to hemolyze red blood cells","Their cell wall thickness","Their flagella","Their size","Differential media reveal metabolic differences visually."],
+[4,"Which pair are examples of enriched media?","Blood agar and chocolate agar","Nutrient broth and nutrient agar","MacConkey and Mannitol Salt agar","Transport and anaerobic broth","Enriched media support fastidious organisms with complex growth needs."],
+[4,"What is the purpose of transport media?","To preserve microbial viability between collection and the laboratory","To select for Staphylococcus","To differentiate by hemolysis","To grow organisms industrially","They maintain pH and osmotic balance of the sample."],
+[5,"What should be done before first operating an autoclave?","Read the manufacturer’s manual","Run it empty with no water","Open the door during heating","Load it with sealed airtight bottles","The manual explains features, capabilities and safety precautions."],
+[5,"What type of water is added to the autoclave reservoir?","Distilled water, in the amount the manufacturer specifies","Any tap water","Saline solution","Disinfectant","Water amount varies with the autoclave model."],
+[5,"Why should the load be arranged carefully?","So steam can penetrate effectively","So items touch each other tightly","To reduce the pressure","To avoid using containers","Poor arrangement prevents steam reaching all surfaces."],
+[5,"Which parameters are set on the control panel?","Temperature, pressure and sterilization cycle time","Humidity and light intensity","pH and osmotic balance","Voltage and gas flow only","These follow the manufacturer’s guidelines and the materials being sterilized."],
+[5,"What should happen after the cycle is complete?","Allow the autoclave to cool before opening","Open the door immediately","Add more water at once","Turn the load upside down","Cooling prevents sudden steam release and burns."],
+[5,"How should the autoclave door be opened?","Standing to the side, with heat-resistant gloves if needed","Facing it directly","With bare hands while still hot","Only after removing the gasket","This avoids exposure to hot steam."],
+[5,"Which information should be recorded for each cycle?","Date, time, cycle parameters and contents of the run","Only the operator’s name","Only the room temperature","Nothing, if the cycle succeeded","Records support quality control and regulatory compliance."],
+[5,"Why must the door gasket be clean and in good condition?","To prevent steam leakage","To reduce cooling time","To increase water use","To sterilize the water","A sealed chamber depends on an intact gasket."],
+[6,"What is the correct order of the microbial growth phases?","Lag, log, stationary, death","Log, lag, stationary, death","Lag, stationary, log, death","Stationary, lag, log, death","The growth curve begins with adaptation and ends with decline."],
+[6,"What happens in the lag phase?","Cells adapt and synthesize enzymes with no apparent increase in number","The population doubles at a constant rate","Growth and death are balanced","Cell death exceeds division","Cells are metabolically active but not yet dividing noticeably."],
+[6,"During which phase is the growth rate maximal under optimal conditions?","Logarithmic (log) phase","Lag phase","Stationary phase","Death phase","Cells divide and multiply at a constant rate in this phase."],
+[6,"What characterizes the stationary phase?","Cell growth is balanced by cell death, giving a plateau","Rapid exponential increase","Complete lack of metabolism","Rapid decline in viable cells","Nutrient depletion and waste slow the growth rate."],
+[6,"What causes the death phase?","Cell death exceeds cell division as nutrients deplete and wastes accumulate","The cells are adapting to a new medium","Nutrients become unlimited","Cells divide at a constant rate","The number of viable cells declines."],
+[6,"A typical growth curve describes growth in:","A closed system with a limited nutrient supply","An open system with unlimited nutrients","A sterile solution with no cells","A system without time","This is the setting in which the four phases appear."],
+[6,"Which is a use of microbial growth curves?","Assessing the efficacy of antimicrobial agents","Staining cell walls","Counting chromosomes","Preparing sterile drapes","They also help study growth kinetics and optimize fermentation."],
+[6,"What influences the length of the lag phase?","Species, growth medium composition and environmental conditions","Only the color of the medium","The size of the incubator door","Nothing; it is fixed","Lag duration varies with species and conditions."],
+[7,"Microbiology is the study of:","Microscopic organisms such as bacteria, viruses, fungi, protozoa and algae","Only human cells","Only plants","Only large animals","These organisms are often too small to see without microscopes."],
+[7,"What is the bacterial cell wall primarily composed of?","Peptidoglycan","Chitin","Cellulose","Glucans","Fungal walls contain chitin or glucans."],
+[7,"Fungal cell walls contain:","Chitin or glucans","Peptidoglycan","Lipopolysaccharide","Teichoic acid","Cell wall composition differs among microorganisms."],
+[7,"What is the function of the plasma membrane?","Separates the cell interior from the environment and regulates passage of molecules","Stores genetic information","Makes the cell wall","Produces flagella","All microorganisms have a plasma membrane."],
+[7,"Where does protein synthesis occur?","On ribosomes in the cytoplasm","In the capsule","In pili","In the cell wall","Ribosomes are found in the cytoplasm."],
+[7,"What does a capsule do?","Protects against drying and helps evade the host immune system","Allows swimming","Synthesizes protein","Stores DNA","It is a thick, gelatinous layer around the cell wall."],
+[7,"Pili or fimbriae are involved in:","Attachment and bacterial conjugation","Energy production","Protein synthesis","Staining reactions","They are hair-like surface appendages."],
+[7,"How do flagella differ from cilia?","Flagella are long and whip-like, whereas cilia are shorter and more numerous","Flagella are short and numerous","Cilia are long and few","They are identical","Both are used for movement."],
+[8,"Cocci are:","Spherical or ovoid microorganisms","Rod-shaped","Comma-shaped","Corkscrew-shaped","Examples include Staphylococcus, Streptococcus and Neisseria."],
+[8,"Staphylococci are cocci arranged in:","Clusters","Chains","Tetrads","Single rods","Streptococci form chains."],
+[8,"Streptococci are cocci arranged in:","Chains","Clusters","Pairs only","Spirals","Diplococci are pairs and tetrads are groups of four."],
+[8,"Bacilli are:","Rod-shaped","Spherical","Spiral","Comma-shaped","Examples include Escherichia coli and Bacillus anthracis."],
+[8,"Which shape is flexible and helical, moving by axial filaments?","Spirochetes","Spirilla","Vibrios","Cocci","Treponema pallidum is an example."],
+[8,"Vibrio cholerae is:","Comma-shaped","Spherical","Stalked","Filamentous","Vibrios are curved rods and are often motile."],
+[8,"What describes pleomorphic microorganisms?","They vary in shape and lack a fixed form","They are always spherical","They are always rod-shaped","They always form chains","Some Mycoplasma species are an example."],
+[8,"Caulobacter is an example of which type?","Stalked","Vibrio","Spirochete","Pleomorphic","Stalked organisms attach to surfaces by a stalk."],
+[9,"What does sterilization achieve?","Complete destruction or removal of all microbial life, including spores","Killing only some bacteria","Removing only fungi","Lowering the pH","It covers bacteria, viruses, fungi and spores."],
+[9,"What are the typical autoclave conditions?","Pressurized steam at about 121°C for 15 to 20 minutes","Dry air at 50°C for 5 minutes","UV light for 1 minute","Boiling water for 10 seconds","Autoclaving is one of the most common methods."],
+[9,"Dry heat sterilization typically uses:","160°C to 180°C for an extended time","121°C for 15 minutes","800°C for seconds","Room temperature for hours","It needs longer exposure than autoclaving."],
+[9,"Incineration is commonly used for:","Disposing of contaminated materials, cultures and waste","Sterilizing heat-sensitive liquids","Sterilizing air in cabinets","Staining","It uses temperatures above 800°C."],
+[9,"Which are common chemical sterilants for heat-sensitive materials?","Ethylene oxide, hydrogen peroxide and glutaraldehyde","Crystal violet and safranin","Beef extract and peptone","Ethanol and acetone only","Suitable for plastics, rubber and electronics."],
+[9,"Filtration is best suited to sterilizing:","Heat-sensitive liquids such as media containing antibiotics or proteins","Glass test tubes","Contaminated waste","Powders","Filters have pores small enough to trap microorganisms."],
+[9,"How does UV radiation sterilize surfaces and air?","By damaging microbial DNA and preventing replication","By dissolving cell walls","By removing oxygen","By raising pressure","It is used in biosafety cabinets and laminar flow hoods."],
+[9,"Gamma or electron beam radiation is commonly used for:","Disposable lab supplies, medical devices and pharmaceuticals","Autoclave water","Culture media in tubes","Staining reagents","Ionizing radiation damages microbial DNA."],
+[10,"What is the focus of medical microbiology?","Microorganisms relevant to human health and disease","Only plant diseases","Only soil organisms","Only fermentation","It covers diagnosis, treatment and prevention of infection."],
+[10,"What does the study of pathogenesis examine?","How pathogens invade tissues, evade immunity and cause damage","How to stain bacteria","How to prepare agar","How autoclaves work","Understanding it guides diagnosis, treatment and prevention."],
+[10,"Which samples are used in diagnostic microbiology?","Blood, urine, sputum and tissue specimens","Only air samples","Only soil samples","Only sterile water","Pathogens are isolated and identified from clinical samples."],
+[10,"PCR belongs to which category of diagnostic technique?","Molecular methods","Microscopy","Culture","Biochemical tests","Other methods include serology and sequencing."],
+[10,"What do microbiologists do about antimicrobial resistance?","Monitor resistance trends and guide appropriate antibiotic use","Encourage unlimited antibiotic use","Ignore resistant strains","Only study viruses","The goal is to minimize the development of resistance."],
+[10,"Vaccinology involves:","Developing and evaluating vaccines for safety and efficacy","Naming bacterial shapes","Sterilizing instruments","Preparing growth curves","It includes trials and monitoring vaccine coverage."],
+[10,"Epidemiology of infectious diseases studies:","Distribution and determinants of disease, including outbreaks and transmission","Cell wall composition","Gram staining steps","Autoclave maintenance","It helps design surveillance and control strategies."],
+[10,"What is the role of infection control in healthcare settings?","Developing guidelines, surveillance for healthcare-associated infections and outbreak investigation","Culturing fungi for food","Genetic engineering","Selecting culture media","It minimizes the spread of pathogens."],
+[11,"Why are microorganisms useful model systems in genetics?","Rapid growth, simple cells and ease of genetic manipulation","Large genomes","Slow reproduction","Complex organelles","These properties suit them to studying genetic principles."],
+[11,"Which are sources of genetic variation in microbial populations?","Mutation, recombination and horizontal gene transfer","Photosynthesis only","Meiosis only","Binary fission only","Variation drives diversity and adaptation."],
+[11,"Which classical methods introduce foreign DNA into microbial cells?","Conjugation, transformation and transduction","Autoclaving and filtration","Staining and fixation","Incineration and UV","These are classical genetic methods."],
+[11,"Which gene-editing tool is named among molecular techniques?","CRISPR-Cas","Gram staining","Nutrient agar","Autoclaving","PCR, sequencing and cloning are also listed."],
+[11,"Which four bases occur in standard DNA?","Adenine, thymine, cytosine and guanine","Adenine, uracil, cytosine and guanine","Adenine, thymine, uracil and xanthine","Thymine, cytosine, guanine and X","Natural DNA uses A, T, C and G."],
+[11,"What is research on adding synthetic bases to the genetic alphabet called?","Xenobiology","Serology","Epidemiology","Mycology","It explores expanding the code beyond four bases."],
+[11,"What is a potential benefit of an expanded genetic alphabet?","Greater information storage and novel proteins with unique properties","Faster Gram staining","Cheaper agar","Eliminating all mutations","The research is still at an early stage."],
+[11,"Besides chromosomes, which genetic element can microbial genomes include?","Plasmids","Chloroplasts","Centrioles","Lysosomes","Genomes may have circular, linear or multiple chromosomes and plasmids."],
+[0,"Which fields rely on aseptic technique to keep products safe and intact?","Medicine, pharmaceuticals, biotechnology and food production","Astronomy and geology","Mining and surveying","Textile and furniture making","Maintaining sterility is critical in these fields."],
+[0,"Which personal protective equipment is used during aseptic work?","Gloves, gowns, masks and sometimes goggles or face shields","Only a wristwatch","Sandals and an apron","None, if the hands were washed","PPE protects against contamination from microorganisms on the body or in respiratory droplets."],
+[1,"Under the light microscope, how do Gram-positive bacteria appear after staining?","Purple","Pink or red","Colorless","Green","They retain the crystal violet-iodine complex."],
+[1,"Which structural property is the basis of Gram differential staining?","Differences in the cell wall structure of bacteria","Differences in cell size only","Presence of a nucleus","Number of flagella","Thick versus thin peptidoglycan with or without an outer membrane."],
+[2,"Besides LPS, which molecules does the Gram-negative outer membrane contain?","Lipoproteins and porins","Teichoic acids","Chitin","Histones","The outer membrane makes the wall more complex and less permeable."],
+[3,"Which process produces eukaryotic reproductive cells?","Meiosis","Binary fission","Conjugation","Budding only","Somatic cells divide by mitosis."],
+[3,"How is eukaryotic DNA organized?","Associated with histone proteins as chromatin in the nucleus","As a naked circular chromosome","Free in the nucleoid","Inside the cell wall","Prokaryotic DNA has no histones."],
+[4,"Which media are prepared oxygen-free and contain reducing agents?","Anaerobic media","Nutrient agar","Blood agar","Transport media","Reducing agents remove residual oxygen for anaerobes."],
+[4,"Blood agar is given as an example of which two media types?","Differential and enriched","Selective and anaerobic","Transport and selective","Anaerobic and nutrient","It differentiates by hemolysis and enriches with blood."],
+[5,"Which step comes right after setting the sterilization parameters?","Starting the cycle","Opening the door","Recording the results","Allowing cooling","The cycle is then monitored on the display."],
+[5,"Where do routine maintenance and calibration guidelines for an autoclave come from?","The manufacturer’s recommendations","Any online forum","The previous operator’s habit","They are not required","Maintenance keeps performance and safety consistent."],
+[6,"In which phase does the population approach the carrying capacity?","Stationary phase","Lag phase","Log phase","Death phase","Growth slows as nutrients deplete and wastes build up."],
+[6,"At what rate do cells divide during the log phase?","A constant rate","Not at all","A decreasing rate until death","Only at the start","Growth is exponential in this phase."],
+[7,"Which organelle in eukaryotic microorganisms is responsible for energy production?","Mitochondria","Vacuoles","Golgi apparatus","Ribosomes","Vacuoles are storage organelles."],
+[7,"What is the gel-like substance filling the interior of the cell called?","Cytoplasm","Capsule","Nucleoid","Plasma membrane","It contains organelles such as ribosomes."],
+[8,"Which cocci arrangement occurs in groups of four?","Tetrads","Chains","Clusters","Diplococci","Diplococci occur in pairs."],
+[8,"Which shape forms branching structures, as in Penicillium and molds?","Filamentous","Vibrio","Stalked","Spirillum","Filamentous organisms are elongated."],
+[9,"Membrane filters used for microbial filtration are made of materials such as:","Cellulose acetate or PTFE","Cotton or wool","Aluminum foil","Agar","Pores are small enough to trap microorganisms."],
+[9,"Which method suits glassware, powders and oils that tolerate high heat without moisture?","Dry heat sterilization","UV radiation","Filtration","Gamma radiation","It requires longer exposure than autoclaving."],
+[10,"What does immunology within medical microbiology investigate?","The host immune response, both innate and adaptive","How to prepare nutrient agar","The shapes of bacteria","Autoclave cycles","It also covers vaccination and immunodeficiency."],
+[11,"Gene expression involves transcription into RNA and translation into:","Proteins","Lipids","Polysaccharides","Plasmids","Microbial genetics studies how this is regulated."],
+[11,"Which products can engineered microbial strains be used to make?","Biofuels, pharmaceuticals, enzymes and bioplastics","Only antibiotic-resistance genes","Only agar","Nothing useful","Genetic engineering enables strains with desired traits."]
+];
+
+const N=[{"title":"Aseptic Technique","b":[{"t":"p","x":"Aseptic technique is a set of practices designed to prevent contamination of sterile areas or materials by microorganisms. It is commonly used in medical and laboratory settings where maintaining a sterile environment is crucial to prevent the spread of infection or contamination of experimental samples."},{"t":"p","x":"Here are some key principles and practices of aseptic technique:"},{"t":"li","h":"Hand hygiene","x":"Thoroughly washing hands with soap and water or using an alcohol-based hand sanitizer is essential before performing any aseptic procedures."},{"t":"li","h":"Use of personal protective equipment (PPE)","x":"This includes wearing gloves, gowns, masks, and sometimes goggles or face shields to protect against contamination from microorganisms carried on the body or in respiratory droplets."},{"t":"li","h":"Sterile equipment and supplies","x":"All instruments, containers, and materials that come into contact with sterile areas or samples must be sterilized or sanitized using methods such as autoclaving, chemical disinfection, or sterile filtration."},{"t":"li","h":"Sterile field","x":"Creating and maintaining a sterile field involves using sterile drapes or barriers to cover work surfaces and only placing sterile items on or within the designated sterile area."},{"t":"li","h":"Proper handling techniques","x":"Careful handling of sterile items, including avoiding contact with non-sterile surfaces or items, minimizing movement within the sterile field, and using sterile techniques when transferring or manipulating materials."},{"t":"li","h":"Environmental control","x":"Maintaining a clean and controlled environment by minimizing airflow disruptions, controlling temperature and humidity, and regularly cleaning and disinfecting work areas."},{"t":"li","h":"Aseptic gowning and gloving","x":"Proper gowning and gloving techniques help prevent contamination of sterile areas by minimizing the risk of shedding microorganisms from the skin, hair, or clothing."},{"t":"li","h":"Disposal of waste","x":"Proper disposal of contaminated materials and waste is essential to prevent the spread of microorganisms. This includes using designated containers for sharps and biohazardous waste and following appropriate protocols for disposal."},{"t":"p","x":"Aseptic technique is crucial in various fields, including medicine, pharmaceuticals, biotechnology, and food production, where maintaining sterility is critical to ensure product safety and integrity. Regular training and adherence to established protocols are essential for effective implementation of aseptic technique practices."}]},{"title":"Gram Staining","b":[{"t":"p","x":"Gram staining is a common microbiological technique used to differentiate bacteria into two groups based on the properties of their cell walls. The method was developed by Danish bacteriologist Hans Christian Gram in 1884 and remains widely used today."},{"t":"p","x":"The Gram staining procedure involves several steps:"},{"t":"li","h":"Preparation of a bacterial smear","x":"A small sample of the bacterial culture is spread onto a clean microscope slide and allowed to air dry. Heat fixation may be used to adhere the bacteria to the slide."},{"t":"li","h":"Primary stain (Crystal Violet)","x":"The smear is flooded with a crystal violet solution, which stains all bacteria purple."},{"t":"li","h":"Mordant (Gram's iodine)","x":"A mordant, typically Gram's iodine, is applied to the smear. This helps the crystal violet dye form a complex with the peptidoglycan layer of the bacterial cell wall, increasing its retention."},{"t":"li","h":"Decolorization","x":"The slide is rinsed with a decolorizing agent, usually ethanol or acetone. This step differentiates between Gram-positive and Gram-negative bacteria. Gram-positive bacteria retain the crystal violet-iodine complex and appear purple, while Gram-negative bacteria lose the stain and become colorless."},{"t":"li","h":"Counterstain (Safranin)","x":"The smear is then stained with a contrasting color, usually safranin or basic fuchsin. This counterstain colors the decolorized Gram-negative bacteria pink or red but has little effect on the purple Gram-positive bacteria."},{"t":"p","x":"After staining, the slide is observed under a light microscope. Gram-positive bacteria will appear purple, while Gram-negative bacteria will appear pink or red."},{"t":"p","x":"The differential staining characteristic of Gram staining is based on differences in the cell wall structure of bacteria. Gram-positive bacteria have a thick layer of peptidoglycan in their cell walls, which retains the crystal violet-iodine complex, while Gram-negative bacteria have a thinner layer of peptidoglycan surrounded by an outer membrane containing lipopolysaccharides. This outer membrane is disrupted by the decolorization step, causing the loss of the crystal violet-iodine complex."},{"t":"p","x":"Gram staining is a rapid and valuable tool for microbiologists to identify and classify bacteria, aiding in the diagnosis and treatment of infections. However, it's important to note that some bacteria may not conform to the typical Gram staining characteristics, and additional biochemical or molecular tests may be necessary for accurate identification."}]},{"title":"Gram-Positive vs Gram-Negative","b":[{"t":"p","x":"Gram-positive and Gram-negative bacteria are two major groups of bacteria distinguished by differences in their cell wall structure, which result in contrasting responses to the Gram staining procedure. Here are the key differences between Gram-positive and Gram-negative bacteria:"},{"t":"h","x":"Cell wall structure"},{"t":"li","h":"","x":"Gram-positive bacteria have a thick layer of peptidoglycan in their cell walls, which accounts for up to 90% of the cell wall's composition. This thick layer retains the crystal violet-iodine complex during Gram staining, resulting in a purple color."},{"t":"li","h":"","x":"Gram-negative bacteria have a thinner layer of peptidoglycan in their cell walls, comprising only about 10% of the cell wall's composition. Additionally, they have an outer membrane containing lipopolysaccharides (LPS) and lipoproteins. This outer membrane makes the cell wall more complex and less permeable. During Gram staining, the outer membrane of Gram-negative bacteria is disrupted by the decolorizing agent, leading to the loss of the crystal violet-iodine complex and subsequent staining with the counterstain, appearing pink or red."},{"t":"h","x":"Cell wall composition"},{"t":"li","h":"","x":"In Gram-positive bacteria, the thick layer of peptidoglycan is interspersed with teichoic acids and lipoteichoic acids, which contribute to the overall rigidity and stability of the cell wall."},{"t":"li","h":"","x":"In Gram-negative bacteria, the outer membrane contains lipopolysaccharides (LPS), which are potent endotoxins and play roles in pathogenesis and immune response evasion. The outer membrane also contains porins, which regulate the passage of molecules into the cell."},{"t":"h","x":"Sensitivity to antibiotics"},{"t":"li","h":"","x":"Gram-positive bacteria are generally more susceptible to antibiotics that target cell wall synthesis, such as penicillin and vancomycin, due to the presence of the thick peptidoglycan layer in their cell walls."},{"t":"li","h":"","x":"Gram-negative bacteria are often more resistant to antibiotics due to the presence of the outer membrane, which acts as a barrier and limits the entry of certain antibiotics. Additionally, Gram-negative bacteria may possess efflux pumps that actively remove antibiotics from the cell."},{"t":"h","x":"Pathogenicity and virulence factors"},{"t":"li","h":"","x":"Both Gram-positive and Gram-negative bacteria can be pathogenic and cause infectious diseases. However, the composition of their cell walls and outer membranes may influence their virulence and interactions with the host immune system."},{"t":"li","h":"","x":"Gram-negative bacteria, with their outer membrane containing LPS, may trigger strong inflammatory responses in the host, contributing to the severity of infections."},{"t":"p","x":"Understanding the differences between Gram-positive and Gram-negative bacteria is crucial for microbiologists, clinicians, and researchers in various fields, including medicine, microbiology, and biotechnology, as it helps in the diagnosis, treatment, and control of bacterial infections."}]},{"title":"Prokaryotes vs Eukaryotes","b":[{"t":"p","x":"Prokaryotes and eukaryotes are two major categories of organisms that differ primarily in the complexity and organization of their cellular structures. Here are the key differences between prokaryotic and eukaryotic cells:"},{"t":"h","x":"Cellular Organization"},{"t":"li","h":"","x":"Prokaryotic cells are simpler in structure and lack a true nucleus. Their genetic material is located in a region called the nucleoid, which is not enclosed by a membrane. Prokaryotic cells also lack membrane-bound organelles."},{"t":"li","h":"","x":"Eukaryotic cells are more complex and have a true nucleus, which houses the genetic material (DNA) within a membrane-bound nucleus. Eukaryotic cells contain various membrane-bound organelles, such as mitochondria, endoplasmic reticulum, Golgi apparatus, and lysosomes."},{"t":"h","x":"Nucleus"},{"t":"li","h":"","x":"In prokaryotic cells, the genetic material (DNA) is typically a single, circular chromosome located in the nucleoid region of the cell. There are no histones associated with the DNA, and there are no introns in prokaryotic genes."},{"t":"li","h":"","x":"Eukaryotic cells have multiple linear chromosomes within the nucleus. The DNA is associated with histone proteins and is organized into chromatin. Eukaryotic genes often contain introns, which are non-coding regions that are removed during RNA processing."},{"t":"h","x":"Membrane-bound Organelles"},{"t":"li","h":"","x":"Prokaryotic cells lack membrane-bound organelles such as mitochondria, endoplasmic reticulum, Golgi apparatus, and lysosomes."},{"t":"li","h":"","x":"Eukaryotic cells contain membrane-bound organelles that compartmentalize different cellular functions. For example, mitochondria are involved in energy production (ATP synthesis), the endoplasmic reticulum is involved in protein synthesis and processing, the Golgi apparatus modifies and packages proteins for secretion, and lysosomes are involved in intracellular digestion."},{"t":"h","x":"Cell Size"},{"t":"li","h":"","x":"Prokaryotic cells are generally smaller in size compared to eukaryotic cells. They typically range from 0.1 to 5 micrometers in diameter."},{"t":"li","h":"","x":"Eukaryotic cells are larger and more varied in size, ranging from 10 to 100 micrometers in diameter."},{"t":"h","x":"Reproduction"},{"t":"li","h":"","x":"Prokaryotic cells reproduce primarily through binary fission, a process where the cell divides into two daughter cells, each with identical genetic material."},{"t":"li","h":"","x":"Eukaryotic cells reproduce through mitosis (for somatic cells) or meiosis (for reproductive cells), which involves complex processes of nuclear division and cell division (cytokinesis)."},{"t":"h","x":"Presence of Cell Wall"},{"t":"li","h":"","x":"Many prokaryotic cells have a rigid cell wall outside the cell membrane, which provides structural support and protection. The composition of the cell wall varies among different types of prokaryotes."},{"t":"li","h":"","x":"While some eukaryotic cells also have cell walls (e.g., plant cells have a cellulose cell wall), they are generally simpler in structure compared to prokaryotic cell walls."},{"t":"p","x":"These differences in cellular organization and complexity have significant implications for the metabolism, growth, and ecological roles of prokaryotic and eukaryotic organisms."}]},{"title":"Microbial Media","b":[{"t":"p","x":"Microbial media, also known as growth media or culture media, are nutrient-rich substances used to cultivate and grow microorganisms such as bacteria, fungi, and protists in laboratory settings. These media provide essential nutrients required for the growth, reproduction, and metabolism of microorganisms."},{"t":"p","x":"There are several types of microbial media, classified based on their composition, purpose, and physical state. Here are some common types:"},{"t":"li","h":"Nutrient Agar","x":"Nutrient agar is a solid medium containing beef extract, peptone, and agar, a gel-like substance derived from seaweed. It is commonly used for the general cultivation and maintenance of a wide range of microorganisms."},{"t":"li","h":"Nutrient Broth","x":"Nutrient broth is a liquid medium with similar components to nutrient agar but lacks agar. It is used for the propagation of microorganisms in suspension."},{"t":"li","h":"Selective Media","x":"Selective media are formulated to selectively promote the growth of specific microorganisms while inhibiting the growth of others. Examples include MacConkey agar, which selects for Gram-negative bacteria, and Mannitol Salt agar, which selects for Staphylococcus species."},{"t":"li","h":"Differential Media","x":"Differential media contain substances that allow different types of microorganisms to be visually distinguished based on their metabolic activities or other characteristics. Blood agar, for example, differentiates bacteria based on their ability to hemolyze red blood cells."},{"t":"li","h":"Enriched Media","x":"Enriched media contain additional nutrients such as blood, serum, or special growth factors to support the growth of fastidious microorganisms, which have complex growth requirements. Examples include blood agar and chocolate agar."},{"t":"li","h":"Anaerobic Media","x":"Anaerobic media are designed to cultivate microorganisms that thrive in the absence of oxygen. These media are typically prepared in an oxygen-free environment and may contain reducing agents to eliminate any residual oxygen."},{"t":"li","h":"Transport Media","x":"Transport media are designed to preserve the viability of microorganisms during transport from the collection site to the laboratory for further analysis. They often contain substances to maintain the pH and osmotic balance of the sample."},{"t":"p","x":"Microbial media play a crucial role in various microbiological applications, including clinical diagnostics, research, food and beverage testing, pharmaceutical development, and environmental monitoring. The choice of media depends on the specific requirements of the microorganisms being cultured and the objectives of the experiment or analysis."}]},{"title":"Autoclave Operation","b":[{"t":"p","x":"Operating an autoclave safely and effectively is crucial to ensure proper sterilization of equipment and materials in laboratory settings. Here's a general guide on how to operate an autoclave:"},{"t":"li","h":"Read the Manual","x":"Before operating the autoclave, carefully read the manufacturer's manual to understand the specific features, capabilities, and safety precautions of the equipment."},{"t":"li","h":"Prepare the Load","x":"Place the items to be sterilized inside autoclave-safe containers, such as autoclavable bags or containers. Ensure that the load is arranged in a way that allows steam to penetrate effectively."},{"t":"li","h":"Add Water","x":"Fill the autoclave reservoir with distilled water according to the manufacturer's instructions. The amount of water required may vary depending on the autoclave model."},{"t":"li","h":"Close the Door Securely","x":"Close the autoclave door securely to create a sealed chamber. Make sure the door gasket is clean and in good condition to prevent steam leakage."},{"t":"li","h":"Set Sterilization Parameters","x":"Use the control panel to set the desired sterilization parameters, including temperature, pressure, and sterilization cycle time. Follow the guidelines provided by the manufacturer and consider the type of materials being sterilized."},{"t":"li","h":"Start the Cycle","x":"Initiate the sterilization cycle by pressing the appropriate buttons on the control panel. Some autoclaves may have pre-programmed cycles for common sterilization tasks, while others allow customization of cycle parameters."},{"t":"li","h":"Monitor the Cycle","x":"During the sterilization cycle, monitor the autoclave display to ensure that the temperature and pressure are within the specified range. Some autoclaves may have built-in sensors and alarms to alert users of any deviations from the set parameters."},{"t":"li","h":"Allow Cooling Time","x":"Once the sterilization cycle is complete, allow the autoclave to cool down before opening the door. This helps prevent the sudden release of steam and reduces the risk of burns."},{"t":"li","h":"Open the Door Safely","x":"Carefully open the autoclave door while standing to the side to avoid exposure to hot steam. Use heat-resistant gloves if necessary."},{"t":"li","h":"Remove Sterilized Items","x":"Remove the sterilized items from the autoclave using sterile tools or gloves. Be cautious as the items may still be hot."},{"t":"li","h":"Record Keeping","x":"Maintain accurate records of sterilization cycles, including the date, time, cycle parameters, and contents of each run. This is essential for quality control and compliance with regulatory requirements."},{"t":"li","h":"Routine Maintenance","x":"Follow the manufacturer's recommendations for routine maintenance and calibration of the autoclave to ensure its continued performance and safety."},{"t":"p","x":"By following these steps and adhering to proper safety practices, you can effectively operate an autoclave to achieve reliable sterilization of laboratory equipment and materials."}]},{"title":"Microbial Growth Curve","b":[{"t":"p","x":"The microbial growth curve describes the typical pattern of growth exhibited by populations of microorganisms over time when they are cultivated in a closed system with a limited nutrient supply. The curve typically consists of several distinct phases:"},{"t":"li","h":"Lag Phase","x":"During the lag phase, microorganisms are adapting to their new environment. While there is no apparent increase in population size, cells are metabolically active, synthesizing enzymes, and preparing for growth. The length of the lag phase varies depending on factors such as the species of microorganism, the composition of the growth medium, and the environmental conditions."},{"t":"li","h":"Logarithmic (Log or Exponential) Phase","x":"Once adaptation is complete, microorganisms enter the logarithmic phase, also known as the log or exponential phase. During this phase, the population size increases rapidly as cells divide and multiply at a constant rate. Growth is typically characterized by a steady increase in cell number and exponential growth of the population. Under optimal conditions, the growth rate is maximal during this phase."},{"t":"li","h":"Stationary Phase","x":"As the population size approaches the carrying capacity of the environment, nutrient depletion, waste accumulation, and other factors lead to a decrease in the growth rate. The stationary phase is characterized by a balance between cell growth and cell death, resulting in a plateau in population size. During this phase, the rate of cell division slows down, and the number of viable cells remains relatively constant."},{"t":"li","h":"Death Phase","x":"Eventually, the accumulation of waste products, depletion of nutrients, and other adverse conditions lead to a decline in the population size. The death phase is characterized by a decrease in the number of viable cells as cell death exceeds cell division. The rate of decline may vary depending on the severity of the environmental stressors."},{"t":"p","x":"It's important to note that while the microbial growth curve provides a general framework for understanding population dynamics, variations may occur depending on factors such as the specific microbial species, the composition of the growth medium, temperature, pH, oxygen availability, and other environmental conditions."},{"t":"p","x":"Microbial growth curves are fundamental in microbiology and are used to study the growth kinetics of microorganisms, assess the efficacy of antimicrobial agents, optimize industrial fermentation processes, and understand microbial ecology and population dynamics in natural environments."}]},{"title":"Introduction and Structures","b":[{"t":"p","x":"Microbiology is the branch of biology that deals with the study of microscopic organisms, including bacteria, viruses, fungi, protozoa, and algae. These microorganisms are often too small to be seen with the naked eye and are studied using specialized instruments such as microscopes."},{"t":"p","x":"Microbiologists study various aspects of microorganisms, including their structure, function, genetics, ecology, and their roles in infectious diseases, environmental processes, food production, and biotechnology. They also explore interactions between microorganisms and other organisms, as well as their impact on human health and the environment."},{"t":"p","x":"Microbiology plays a crucial role in many fields, including medicine (medical microbiology), agriculture (agricultural microbiology), industry (industrial microbiology), and environmental science (environmental microbiology). It has applications in areas such as the development of antibiotics, vaccines, and other medical treatments, food safety and preservation, bioremediation, and genetic engineering."},{"t":"h","x":"Structures of microorganisms"},{"t":"p","x":"Microorganisms encompass a wide range of structures due to their diversity, but some common structures found in various types of microorganisms include:"},{"t":"li","h":"Cell Wall","x":"Many microorganisms, such as bacteria and fungi, have a cell wall that provides structural support and protection. The composition of the cell wall varies among different types of microorganisms. For example, bacterial cell walls are primarily composed of peptidoglycan, while fungal cell walls contain chitin or glucans."},{"t":"li","h":"Plasma Membrane","x":"All microorganisms have a plasma membrane, also known as a cell membrane, which separates the interior of the cell from the external environment. The plasma membrane regulates the passage of molecules into and out of the cell."},{"t":"li","h":"Cytoplasm","x":"The cytoplasm is the gel-like substance that fills the interior of the cell. It contains various organelles, such as ribosomes, where protein synthesis occurs, and nucleic acids, which store genetic information."},{"t":"li","h":"Nucleus or Nucleoid","x":"In eukaryotic microorganisms, such as fungi and some protists, the genetic material (DNA) is enclosed within a membrane-bound nucleus. In prokaryotic microorganisms, such as bacteria, the genetic material is typically found in a region called the nucleoid, which lacks a surrounding membrane."},{"t":"li","h":"Organelles","x":"Eukaryotic microorganisms contain various organelles, including mitochondria (responsible for energy production), Golgi apparatus (involved in protein processing and secretion), endoplasmic reticulum (involved in protein synthesis and lipid metabolism), and vacuoles (storage organelles)."},{"t":"li","h":"Flagella and Cilia","x":"Some microorganisms are motile and possess appendages called flagella or cilia, which they use for movement. Flagella are long, whip-like structures, whereas cilia are shorter and more numerous. These structures are often used for locomotion or to move substances across the cell surface."},{"t":"li","h":"Capsule","x":"Some bacteria and other microorganisms have a capsule, which is a thick, gelatinous layer surrounding the cell wall. The capsule provides protection against desiccation (drying out) and helps the microorganism evade the host immune system."},{"t":"li","h":"Pili or Fimbriae","x":"Pili are hair-like appendages found on the surface of some bacteria. They can be involved in attachment to surfaces or other cells, as well as in bacterial conjugation, which is a mechanism of genetic exchange between bacterial cells."},{"t":"p","x":"These structures represent some of the common features found in microorganisms, but the specific structures and their functions can vary widely depending on the type of microorganism."}]},{"title":"Shapes of Microorganisms","b":[{"t":"p","x":"Microorganisms exhibit a diverse range of shapes, which can be classified into several broad categories. Here are some common shapes of microorganisms:"},{"t":"li","h":"Cocci","x":"Cocci are spherical or ovoid-shaped microorganisms. They can occur singly, in pairs (diplococci), in chains (streptococci), in clusters (staphylococci), or in groups of four (tetrads). Examples include species of Staphylococcus, Streptococcus, and Neisseria."},{"t":"li","h":"Bacilli","x":"Bacilli are rod-shaped microorganisms. They can be straight, curved, or club-shaped. Bacilli can occur singly or in chains (streptobacilli). Examples include Escherichia coli, Bacillus anthracis, and Clostridium botulinum."},{"t":"li","h":"Spirilla","x":"Spirilla are spiral-shaped microorganisms with a rigid helical shape. They may have one or more twists and can be short or elongated. Examples include species of Spirillum and Campylobacter."},{"t":"li","h":"Spirochetes","x":"Spirochetes are spiral-shaped microorganisms with a flexible helical shape. They have a distinctive corkscrew-like appearance and often exhibit motility through axial filaments. Examples include Treponema pallidum (causative agent of syphilis) and Borrelia burgdorferi (causative agent of Lyme disease)."},{"t":"li","h":"Vibrios","x":"Vibrios are comma-shaped microorganisms with a curved rod-like structure. They are slightly curved or comma-shaped and are often motile. Examples include Vibrio cholerae (causative agent of cholera)."},{"t":"li","h":"Filamentous","x":"Filamentous microorganisms are elongated and filamentous in shape, often forming branching structures. Examples include filamentous fungi such as Penicillium and molds."},{"t":"li","h":"Stalked","x":"Stalked microorganisms have a stalk-like extension that attaches them to surfaces. Examples include Caulobacter species."},{"t":"li","h":"Pleomorphic","x":"Pleomorphic microorganisms exhibit variability in shape and lack a distinct, fixed form. They may appear as cocci, bacilli, or irregular shapes under different growth conditions. Examples include some species of Mycoplasma."},{"t":"p","x":"These are just some of the common shapes observed in microorganisms, and there can be variations within each category. Additionally, some microorganisms may exhibit unique or less common shapes not covered here. The shape of a microorganism can provide important clues about its biology, ecology, and potential pathogenicity."}]},{"title":"Sterilization Methods","b":[{"t":"p","x":"Sterilization in a microbiology laboratory is crucial to prevent contamination and ensure the accuracy and reliability of experimental results. Sterilization involves the complete destruction or removal of all forms of microbial life, including bacteria, viruses, fungi, and spores. Here are some common methods of sterilization used in microbiology laboratories:"},{"t":"li","h":"Autoclaving","x":"Autoclaving is one of the most common methods of sterilization. It involves subjecting materials to high-pressure saturated steam at temperatures typically around 121°C (250°F) for a specified period, usually 15-20 minutes. Autoclaving effectively kills microorganisms and spores and is suitable for sterilizing laboratory glassware, media, instruments, and other heat-resistant materials."},{"t":"li","h":"Dry Heat Sterilization","x":"Dry heat sterilization involves heating materials at high temperatures, typically between 160°C to 180°C (320°F to 356°F), for an extended period. This method is suitable for sterilizing glassware, powders, oils, and other heat-stable materials that may be damaged by moist heat. However, it requires longer exposure times compared to autoclaving."},{"t":"li","h":"Incineration","x":"Incineration involves exposing materials to high temperatures, usually above 800°C (1472°F), to completely burn and destroy microorganisms. It is commonly used for the disposal of contaminated materials, such as disposable lab supplies, cultures, and waste."},{"t":"li","h":"Chemical Sterilization","x":"Chemical sterilization involves using chemical agents to kill or inactivate microorganisms. Common chemical sterilants include ethylene oxide, hydrogen peroxide, and glutaraldehyde. These agents are typically used for sterilizing heat-sensitive materials such as plastics, rubber, and electronic equipment."},{"t":"li","h":"Filtration","x":"Filtration involves passing liquids or gases through a filter with pore sizes small enough to trap and remove microorganisms. Membrane filters made of materials such as cellulose acetate or polytetrafluoroethylene (PTFE) are commonly used for microbial filtration. Filtration is suitable for sterilizing heat-sensitive liquids, such as media and solutions containing antibiotics or proteins."},{"t":"li","h":"Ultraviolet (UV) Radiation","x":"UV radiation can be used to sterilize surfaces and air by damaging the DNA of microorganisms, preventing their replication. UV lamps are commonly used in biosafety cabinets, laminar flow hoods, and other laboratory equipment to maintain a sterile environment."},{"t":"li","h":"Radiation Sterilization","x":"Ionizing radiation, such as gamma radiation or electron beam radiation, can be used to sterilize materials by damaging the DNA of microorganisms. This method is commonly used for sterilizing disposable lab supplies, medical devices, and pharmaceutical products."},{"t":"p","x":"It's essential to choose the appropriate sterilization method based on the nature of the materials being sterilized and the specific requirements of the experiment or procedure. Additionally, proper handling and storage of sterilized materials are necessary to maintain their sterility until use."}]},{"title":"Medical Microbiology","b":[{"t":"p","x":"Medical microbiology is a branch of microbiology that specifically focuses on the study of microorganisms that are relevant to human health and disease. It encompasses various aspects of microbiology as they relate to medicine, including the study of pathogenic microorganisms, their interactions with the human body, the immune response to infections, and the diagnosis, treatment, and prevention of infectious diseases."},{"t":"p","x":"Here are some key areas within medical microbiology:"},{"t":"li","h":"Infectious Diseases","x":"Medical microbiologists study the causes, transmission, and epidemiology of infectious diseases caused by bacteria, viruses, fungi, parasites, and other microorganisms. They investigate factors such as the modes of transmission, host-pathogen interactions, and microbial virulence factors."},{"t":"li","h":"Pathogenesis","x":"Understanding how microorganisms cause disease is crucial for developing strategies to diagnose, treat, and prevent infections. Medical microbiologists study the mechanisms by which pathogens invade host tissues, evade the immune system, and cause tissue damage, leading to the development of disease symptoms."},{"t":"li","h":"Diagnostic Microbiology","x":"Medical microbiologists play a vital role in diagnosing infectious diseases by isolating and identifying pathogens from clinical samples, such as blood, urine, sputum, and tissue specimens. They use various techniques, including microscopy, culture, biochemical tests, serology, molecular methods (such as PCR), and advanced technologies like mass spectrometry and next-generation sequencing."},{"t":"li","h":"Antimicrobial Resistance","x":"Medical microbiologists study the emergence and spread of antimicrobial resistance among bacterial, viral, fungal, and parasitic pathogens. They monitor trends in resistance patterns, develop strategies to combat resistance, and provide guidance on appropriate antibiotic use to minimize the development of resistance."},{"t":"li","h":"Immunology","x":"Medical microbiologists investigate the host immune response to infections, including both innate and adaptive immunity. They study how pathogens interact with the immune system, the development of immunity following infection or vaccination, and immunodeficiency disorders that increase susceptibility to infections."},{"t":"li","h":"Vaccinology","x":"Medical microbiologists contribute to the development and evaluation of vaccines against infectious diseases. They study vaccine candidates, assess their safety and efficacy through preclinical and clinical trials, and monitor vaccine coverage and effectiveness in population-based studies."},{"t":"li","h":"Epidemiology","x":"Medical microbiologists analyze the distribution and determinants of infectious diseases in human populations. They investigate outbreaks of infectious diseases, track patterns of transmission, identify risk factors for infection, and develop strategies for disease surveillance and control."},{"t":"li","h":"Infection Control","x":"Medical microbiologists play a crucial role in infection control and prevention efforts within healthcare settings. They develop guidelines for infection control practices, conduct surveillance for healthcare-associated infections, investigate outbreaks, and implement measures to minimize the spread of pathogens."},{"t":"p","x":"Medical microbiology is a dynamic field that continually evolves in response to emerging infectious threats, advances in technology, and changes in healthcare practices. It plays a vital role in protecting public health by advancing our understanding of infectious diseases and improving strategies for their prevention, diagnosis, and treatment."}]},{"title":"Microbial Genetics","b":[{"t":"p","x":"Microbial genetics is the branch of genetics that focuses on the study of the genetic makeup, variation, and processes within microorganisms. Microorganisms, such as bacteria, archaea, fungi, viruses, and protists, serve as model systems for understanding fundamental genetic principles due to their rapid growth rates, simple cellular structures, and ease of genetic manipulation."},{"t":"p","x":"Here are some key aspects of microbial genetics:"},{"t":"li","h":"Genome Structure and Organization","x":"Microbial genetics examines the structure and organization of microbial genomes, including the arrangement of genes, regulatory elements, and non-coding regions. Microbial genomes vary in size, complexity, and organization, with some microorganisms having circular chromosomes, linear chromosomes, or multiple chromosomes and plasmids."},{"t":"li","h":"Gene Expression","x":"Microbial genetics investigates how genes are transcribed into RNA and translated into proteins. It examines the mechanisms of transcriptional regulation, including the role of transcription factors, promoters, enhancers, and repressors. It also explores post-transcriptional processes such as RNA processing, splicing, and stability."},{"t":"li","h":"Genetic Variation","x":"Microbial genetics studies the mechanisms of genetic variation within microbial populations, including mutation, recombination, and horizontal gene transfer. It explores how genetic variation contributes to microbial diversity, adaptation to changing environments, and the evolution of new traits."},{"t":"li","h":"Genetic Analysis Techniques","x":"Microbial genetics employs various experimental techniques to analyze microbial genomes and genetic processes. These techniques include classical genetic methods such as conjugation, transformation, and transduction for introducing foreign DNA into microbial cells. Molecular genetic techniques such as PCR (polymerase chain reaction), DNA sequencing, gene cloning, and gene editing (e.g., CRISPR-Cas) are also widely used."},{"t":"li","h":"Genetic Regulation and Systems Biology","x":"Microbial genetics investigates the regulatory networks that control gene expression and cellular processes in microorganisms. It employs systems biology approaches to model and analyze the interactions between genes, proteins, and metabolites within microbial cells, providing insights into microbial physiology, metabolism, and behavior."},{"t":"li","h":"Genetic Engineering and Biotechnology","x":"Microbial genetics plays a central role in genetic engineering and biotechnology applications. It enables the manipulation of microbial genomes to engineer strains with desired traits, such as improved productivity, enhanced nutrient utilization, and the production of valuable compounds, including biofuels, pharmaceuticals, enzymes, and bioplastics."},{"t":"li","h":"Microbial Pathogenesis","x":"Microbial genetics contributes to our understanding of the genetic determinants of microbial pathogenesis—the process by which microorganisms cause disease. It identifies virulence factors, antibiotic resistance genes, and other genetic elements that influence microbial pathogenicity, host interactions, and the development of infectious diseases."},{"t":"p","x":"Overall, microbial genetics is a dynamic and interdisciplinary field that combines principles of genetics, molecular biology, biochemistry, microbiology, and bioinformatics to unravel the genetic mechanisms underlying microbial biology and diversity. It has broad applications in basic research, biotechnology, medicine, agriculture, and environmental science."},{"t":"h","x":"Five DNA bases instead of four"},{"t":"p","x":"It seems like you're asking about the possibility of having five DNA bases instead of the usual four. In standard DNA, there are four nucleotide bases: adenine (A), thymine (T), cytosine (C), and guanine (G)."},{"t":"p","x":"While naturally occurring DNA utilizes these four bases, there has been research into expanding the genetic alphabet by incorporating additional synthetic bases. This field of research is often referred to as \"xenobiology\" or \"xenogenetics.\""},{"t":"p","x":"One example of such an expanded genetic alphabet is the inclusion of an additional base pair beyond the standard A-T and C-G pairs. In this context, scientists have explored bases such as:"},{"t":"li","h":"X (base)","x":"This hypothetical base could pair with Y in a complementary manner, expanding the genetic code from four to six bases. However, the synthesis and incorporation of such bases into functional DNA molecules are complex challenges that require careful design and testing."},{"t":"p","x":"Research into expanding the genetic alphabet is still in its early stages, and there are significant technical hurdles to overcome before such systems could be implemented for practical applications. However, the potential benefits of an expanded genetic alphabet include increased information storage capacity and the ability to create novel proteins with unique properties."}]}];
+const MN={practice:"Practice session",exam:"Timed exam",missed:"Missed questions"};
+const IC={
+home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>',
+prac:'<svg viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3V4zM9 9h6M9 13h6"/></svg>',
+chart:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
+sun:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>',
+moon:'<svg viewBox="0 0 24 24"><path d="M20 14A8 8 0 0110 4a8 8 0 1010 10z"/></svg>',
+clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+flag:'<svg viewBox="0 0 24 24"><path d="M5 21V4M5 4h12l-2 4 2 4H5"/></svg>',
+grid:'<svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg>',
+x:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+l:'<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>',
+r:'<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>',
+bulb:'<svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0012 3z"/></svg>',
+book:'<svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2V5zM4 19a2 2 0 012-2h13"/></svg>',
+dl:'<svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>',
+up:'<svg viewBox="0 0 24 24"><path d="M12 20V9M7 14l5-5 5 5M5 4h14"/></svg>',
+trash:'<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+gear:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 01-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 01-4 0v-.1a1.7 1.7 0 00-1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 01-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 010-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 012.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 014 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 012.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 010 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>',
+check:'<svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>',
+rep:'<svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 01-14 5M4 12a8 8 0 0114-5M18 3v4h-4M6 21v-4h4"/></svg>',
+send:'<svg viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-7z"/></svg>',
+chat:'<svg viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+phone:'<svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg>',
+users:'<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0M16 4.5a3.5 3.5 0 010 7M18 14.5a6.5 6.5 0 013.5 5.5"/></svg>',
+trophy:'<svg viewBox="0 0 24 24"><path d="M7 4h10v5a5 5 0 01-10 0zM7 6H4v2a3 3 0 003 3M17 6h3v2a3 3 0 01-3 3M12 14v4M8 20h8"/></svg>',
+pen:'<svg viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19zM14 7l3 3"/></svg>'
+};
+const $=s=>document.querySelector(s),app=$('#app'),nav=$('#nav');
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmt=s=>{s=Math.max(0,s);return String(s/60|0).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
+const D0=()=>({theme:null,stats:{},missed:[],hist:[],run:null,pref:{count:20},pal:'green',fb:{cfg:null,name:'',g:null,q:[],voice:''},w:{hist:[],run:null}});
+let D=D0(),ST={persisted:false};
+const KEY='mcb201_v1';
+const idbOpen=()=>new Promise((ok,no)=>{try{const r=indexedDB.open('mcb201',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>ok(r.result);r.onerror=()=>no()}catch(e){no()}});
+const idbPut=async v=>{try{const db=await idbOpen();db.transaction('kv','readwrite').objectStore('kv').put(v,KEY)}catch(e){}};
+const idbGet=async()=>{try{const db=await idbOpen();return await new Promise(ok=>{const q=db.transaction('kv').objectStore('kv').get(KEY);q.onsuccess=()=>ok(q.result);q.onerror=()=>ok(null)})}catch(e){return null}};
+const merge=o=>{const f=D.fb;D=Object.assign(D0(),o);if(!o.fb)D.fb=f;D.fb=Object.assign(D0().fb,D.fb);D.w=Object.assign(D0().w,D.w)};
+const save=()=>{const s=JSON.stringify(D);try{localStorage.setItem(KEY,s)}catch(e){}idbPut(s)};
+let had=false;try{const r=localStorage.getItem(KEY);if(r){merge(JSON.parse(r));had=true}}catch(e){}
+const theme=()=>D.theme||'dark';
+const pal=()=>D.pal||'green';
+const applyTheme=()=>{const h=document.documentElement.dataset;h.theme=theme();h.pal=pal();$('meta[name=theme-color]').content={green:{dark:'#000000',light:'#f2f7f3'},amber:{dark:'#0f0e0c',light:'#f6f1e7'}}[pal()][theme()]};
+const topbar=(l,x='')=>`<div class="row sp"><span class="eb">${l}</span><div class="row">${x}<button class="ib" data-a="go" data-v="settings" aria-label="Settings">${IC.gear}</button></div></div>`;
+let V='home',cfg={mode:'practice',topics:new Set(T.map((_,i)=>i)),count:D.pref.count||20,limit:0},R=null,OV=null,G=false,RF='all',tid=null,NT=0,NB='notes',CK='',HD=0;
+const tally=()=>Object.values(D.stats).reduce((x,s)=>({a:x.a+s.a,c:x.c+s.c}),{a:0,c:0});
+const pct=(c,a)=>a?Math.round(c/a*100):0;
+const tcount=t=>Q.filter(q=>q[0]===t).length;
+function rec(id,ok){const t=Q[id][0],s=D.stats[t]||(D.stats[t]={a:0,c:0});s.a++;if(ok)s.c++;const i=D.missed.indexOf(id);if(ok){if(i>=0)D.missed.splice(i,1)}else if(i<0)D.missed.push(id);save()}
+const pool=()=>cfg.mode==='missed'?D.missed.filter(i=>Q[i]):Q.map((_,i)=>i).filter(i=>cfg.topics.has(Q[i][0]));
+const fb=()=>cfg.mode!=='exam';
+const FB={ok:false,p:null,m:null,db:null,auth:null,uid:null,err:'',sy:0},GS={rows:null,msgs:null,err:'',un:null,tab:'all',f:{}};
+let CD='';
+const fe=e=>{const c=(e&&e.code)||'',m=c+' '+((e&&e.message)||'');return /network|unavailable|offline|fetch|import/.test(m)?'No connection to Firebase right now. Solo practice still works offline.':c==='auth/operation-not-allowed'?'Anonymous sign-in is not turned on in Firebase Authentication.':c==='auth/unauthorized-domain'?'This website address is not in the Authorized domains list in Firebase Authentication.':c==='permission-denied'?'Firestore refused the request. Check your Firestore rules and that you have joined the group.':/api-key/.test(c)?'The API key in your Firebase config is not valid.':'Firebase error: '+(c||(e&&e.message)||'unknown')};
+function fbInit(){
+ if(FB.ok)return Promise.resolve(true);
+ if(FB.p)return FB.p;
+ const c=D.fb.cfg;
+ if(!c){FB.err='Firebase is not set up yet.';return Promise.resolve(false)}
+ if(!navigator.onLine){FB.err=fe({code:'unavailable'});return Promise.resolve(false)}
+ return FB.p=(async()=>{try{
+  const B='https://www.gstatic.com/firebasejs/10.14.1/';
+  const [A,U,S]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);
+  const app=A.getApps().length?A.getApp():A.initializeApp(c);
+  FB.auth=U.getAuth(app);FB.db=S.getFirestore(app);
+  await FB.auth.authStateReady();
+  if(!FB.auth.currentUser)await U.signInAnonymously(FB.auth);
+  FB.uid=FB.auth.currentUser.uid;FB.m=S;FB.ok=true;return true
+ }catch(e){FB.err=fe(e);return false}finally{FB.p=null}})();
+}
+const stopLive=()=>{if(GS.un){GS.un();GS.un=null}};
+const ovm=(t,b)=>{keep();OV={t,b,y:'cancel',yl:'OK',nl:'Close'};render()};
+const keep=()=>{['fcfg','fnm','fgn','fgc'].forEach(k=>{const e=$('#'+k);if(e)GS.f[k]=e.value})};
+const fv=(k,d)=>esc(GS.f[k]!==undefined?GS.f[k]:(d||''));
+function qSession(s){
+ if(!D.fb.g)return;
+ D.fb.q=(D.fb.q||[]).concat([{d:s.d,m:s.m,n:s.n,c:s.c,a:s.a,t:s.t}]).slice(-50);save();syncQ();
+}
+async function syncQ(){
+ const f=D.fb;if(FB.sy||!f.g||!(f.q||[]).length)return;
+ if(!await fbInit())return;
+ FB.sy=1;const M=FB.m,g=f.g.code;
+ try{
+  while(f.q.length){
+   const s=f.q[0],sr=M.doc(FB.db,'groups',g,'members',FB.uid,'sessions',String(s.d)),mr=M.doc(FB.db,'groups',g,'members',FB.uid);
+   await M.runTransaction(FB.db,async tx=>{
+    if((await tx.get(sr)).exists())return;
+    tx.set(sr,{c:s.c,a:s.a,n:s.n,m:s.m,t:s.t,d:s.d});
+    tx.update(mr,{total:M.increment(s.c),ans:M.increment(s.a),ses:M.increment(1),last:M.serverTimestamp()});
+   });
+   f.q.shift();save();
+  }
+  FB.err=''
+ }catch(e){FB.err=fe(e)}
+ FB.sy=0;if(V==='grp')render();
+}
+async function lbStart(){
+ if(!D.fb.g)return;
+ GS.err='';
+ if(!await fbInit()){GS.err=FB.err;if(V==='lb')render();return}
+ if(V!=='lb')return;
+ const M=FB.m;
+ GS.un=M.onSnapshot(M.collection(FB.db,'groups',D.fb.g.code,'members'),s=>{GS.rows=s.docs.map(d=>({id:d.id,...d.data()}));GS.err='';if(V==='lb')render()},e=>{GS.err=fe(e);if(V==='lb')render()});
+ syncQ();
+}
+async function chatStart(){
+ if(!D.fb.g)return;
+ GS.err='';
+ if(!await fbInit()){GS.err=FB.err;paintMsgs();return}
+ if(V!=='chat')return;
+ const M=FB.m;
+ GS.un=M.onSnapshot(M.query(M.collection(FB.db,'groups',D.fb.g.code,'messages'),M.orderBy('ts','desc'),M.limit(100)),s=>{GS.msgs=s.docs.map(d=>({id:d.id,...d.data({serverTimestamps:'estimate'})})).reverse();GS.err='';paintMsgs()},e=>{GS.err=fe(e);paintMsgs()});
+}
+function paintMsgs(){if(V!=='chat')return;const e=$('#msgs');if(e){e.innerHTML=msgsHtml();scrollTo(0,document.body.scrollHeight)}else render()}
+function msgsHtml(){
+ const bn=GS.err?`<div class="fb bad"><b>Not connected</b><p>${esc(GS.err)}</p><button class="lk" data-a="retry">Try again</button></div>`:'';
+ if(!GS.msgs)return bn||'<p class="mu sm">Loading messages</p>';
+ if(!GS.msgs.length)return bn+'<p class="mu">No messages yet. Send the first one to your group.</p>';
+ let last='';
+ return bn+GS.msgs.map(m=>{
+  const t=m.ts&&m.ts.toDate?m.ts.toDate():new Date(),me=m.uid===FB.uid,ds=t.toDateString();
+  const sep=ds!==last?`<div class="mu sm" style="text-align:center;margin:14px 0 8px">${t.toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'})}</div>`:'';last=ds;
+  return sep+`<div class="msg ${me?'me':''}">${me?'':`<div class="who">${esc(m.name||'')}</div>`}${esc(m.text||'')}<div class="tt">${t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div></div>`}).join('');
+}
+async function sendMsg(){
+ const i=$('#cin'),t=i?i.value.trim():'';if(!t)return;
+ if(!await fbInit()){GS.err=FB.err;paintMsgs();return}
+ i.value='';CD='';
+ try{await FB.m.addDoc(FB.m.collection(FB.db,'groups',D.fb.g.code,'messages'),{uid:FB.uid,name:D.fb.name,text:t.slice(0,500),ts:FB.m.serverTimestamp()})}catch(e){GS.err=fe(e);paintMsgs()}
+}
+function grp(){
+ const f=D.fb,g=f.g,q=(f.q||[]).length;
+ if(!g)return `${topbar('Group')}<h1 style="margin:14px 0 0">Study group</h1><p class="mu" style="margin:8px 0 0">Compete on a shared leaderboard and chat with your friends. Solo practice keeps working without it, even offline.</p><div class="stk"><button class="btn" data-a="go" data-v="gset">Set up group</button></div>`;
+ return `${topbar('Group')}<h1 style="margin:14px 0 0">${esc(g.name)}</h1><p class="mu sm" style="margin:8px 0 18px">Code <span class="mono">${g.code}</span>. Signed in as ${esc(f.name)}.</p>
+ ${q?`<div class="card sm mu" style="margin-bottom:12px">${q} finished session${q===1?'':'s'} waiting to upload. ${FB.err?esc(FB.err)+' ':''}They send automatically when you are online.</div>`:''}
+ <button class="tile" data-a="go" data-v="lb"><span class="ic">${IC.trophy}</span><span><b>Leaderboard</b><span class="mu sm">Ranked by total score and accuracy</span></span></button>
+ <button class="tile" data-a="go" data-v="chat"><span class="ic">${IC.chat}</span><span><b>Group chat</b><span class="mu sm">Live messages, private to your group</span></span></button>
+ <button class="tile" data-a="voice"><span class="ic">${IC.phone}</span><span><b>Join voice call</b><span class="mu sm">${f.voice?'Opens your saved group link':'Add a WhatsApp or Meet link in Settings'}</span></span></button>
+ <button class="tile" data-a="go" data-v="gset"><span class="ic">${IC.users}</span><span><b>Group connection</b><span class="mu sm">Name, code and leaving the group</span></span></button>`;
+}
+function lb(){
+ const g=D.fb.g,all=GS.tab==='all',rows=(GS.rows||[]).map(r=>({...r,acc:r.ans?r.total/r.ans:0}));
+ rows.sort(all?(a,b)=>b.total-a.total||b.acc-a.acc:(a,b)=>(b.ans>=20)-(a.ans>=20)||b.acc-a.acc||b.total-a.total);
+ const bn=GS.err?`<div class="fb bad"><b>Not connected</b><p>${esc(GS.err)}</p><button class="lk" data-a="retry">Try again</button></div>`:'';
+ const body=GS.rows?(rows.length?rows.map((r,i)=>`<div class="lbr ${r.id===FB.uid?'me':''}"><span class="rk">${all||r.ans>=20?i+1:''}</span><div style="flex:1;min-width:0"><b style="font-weight:500">${esc(r.name||'')}</b><div class="mu sm">${r.ses} session${r.ses===1?'':'s'}, ${r.ans} answered</div></div><div class="mono" style="text-align:right"><b style="font-weight:500">${all?r.total:pct(r.total,r.ans)+'%'}</b><div class="mu sm">${all?pct(r.total,r.ans)+'%':r.total+' correct'}</div></div></div>`).join(''):'<p class="mu">No members yet.</p>'):(bn||'<p class="mu sm">Loading leaderboard</p>');
+ return `<div class="row sp"><button class="ib" data-a="hb" data-f="grp" aria-label="Back">${IC.l}</button><span class="eb">Leaderboard</span><span style="width:42px"></span></div>
+ <h1 style="margin:16px 0 4px;font-size:28px">${esc(g.name)}</h1>
+ <p class="mu sm" style="margin:0 0 16px">Score is the number of correct answers in finished sessions since you joined. Accuracy ranks begin at 20 answered questions.</p>
+ <div class="seg"><button class="${all?'on':''}" data-a="lbt" data-t="all">Total score</button><button class="${all?'':'on'}" data-a="lbt" data-t="acc">Accuracy</button></div>
+ <div style="margin-top:10px">${GS.rows?bn:''}${body}</div>`;
+}
+function chat(){
+ return `<div class="row sp"><button class="ib" data-a="hb" data-f="grp" aria-label="Back">${IC.l}</button><span class="eb">${esc(D.fb.g.name)}</span><button class="ib" data-a="voice" aria-label="Join voice call">${IC.phone}</button></div>
+ <div id="msgs" style="margin-top:16px">${msgsHtml()}</div><div style="height:76px"></div>
+ <div class="foot"><div><input class="inp" id="cin" maxlength="500" autocomplete="off" enterkeyhint="send" aria-label="Message" value="${esc(CD)}"><button class="ib" data-a="send" aria-label="Send message" onpointerdown="event.preventDefault()">${IC.send}</button></div></div>`;
+}
+function gset(){
+ const f=D.fb,g=f.g,ready=f.cfg&&f.name;
+ return `<div class="row sp"><button class="ib" data-a="hb" data-f="settings" aria-label="Back">${IC.l}</button><span class="eb">Group connection</span><span style="width:42px"></span></div>
+ <h1 style="margin:16px 0 0;font-size:28px">Connect your group</h1>
+ <h3 class="sec">1. Firebase configuration</h3>
+ <p class="mu sm" style="margin:0">${f.cfg?'Connected to project '+esc(f.cfg.projectId)+'. Paste a new block to replace it.':'In the Firebase console open Project settings, find Your apps, and copy the config block. Paste the whole block here.'}</p>
+ <textarea class="inp" id="fcfg" aria-label="Firebase config block" autocomplete="off" autocapitalize="off" spellcheck="false">${fv('fcfg')}</textarea>
+ <div class="stk"><button class="btn g" data-a="fsave">Save configuration</button></div>
+ <h3 class="sec">2. Display name</h3>
+ <p class="mu sm" style="margin:0">Friends see this name on the leaderboard and in chat.</p>
+ <input class="inp" id="fnm" maxlength="24" autocomplete="off" aria-label="Display name" value="${fv('fnm',f.name)}">
+ <div class="stk"><button class="btn g" data-a="nsave">Save display name</button></div>
+ <h3 class="sec">3. Group</h3>
+ ${!ready?'<p class="mu sm">Complete steps 1 and 2 first.</p>':g?`<div class="card"><div class="eb">Your group</div><h3 style="margin:6px 0">${esc(g.name)}</h3><div class="mono" style="font-size:26px;letter-spacing:.12em;color:var(--am)">${g.code}</div><p class="mu sm" style="margin:8px 0 0">Share this code with friends. They choose Join with a code.</p></div>
+ <div class="stk"><button class="btn g" data-a="copy">Copy group code</button><button class="btn g danger" data-a="gask">Leave group</button></div>`:`<label class="mu sm" for="fgn">Create a new group. Choose a group name.</label>
+ <input class="inp" id="fgn" maxlength="40" autocomplete="off" value="${fv('fgn')}">
+ <div class="stk"><button class="btn" data-a="gcreate">Create group</button></div>
+ <label class="mu sm" for="fgc" style="display:block;margin-top:22px">Or join a friend's group. Enter the 6 character code.</label>
+ <input class="inp" id="fgc" maxlength="6" autocomplete="off" autocapitalize="characters" value="${fv('fgc')}">
+ <div class="stk"><button class="btn g" data-a="gjoin">Join with a code</button></div>`}`;
+}
+const settingsMore=()=>`<h3 class="sec">Voice call link</h3>
+ <p class="mu sm" style="margin:0">Paste a WhatsApp group link or a Google Meet link. The Join voice call button in the Group tab opens it.</p>
+ <input class="inp" id="fvo" inputmode="url" autocomplete="off" autocapitalize="off" aria-label="Voice call link" value="${esc(D.fb.voice||'')}">
+ <div class="stk"><button class="btn g" data-a="vsave">Save voice link</button></div>
+ <h3 class="sec">Group and leaderboard</h3>
+ <button class="tile" data-a="go" data-v="gset"><span class="ic">${IC.users}</span><span><b>Group connection</b><span class="mu sm">${D.fb.g?esc(D.fb.g.name)+', code '+D.fb.g.code:'Firebase, display name and group code'}</span></span></button>`;
+const mkCode=()=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=crypto.getRandomValues(new Uint8Array(6));return Array.from(r,x=>A[x%A.length]).join('')};
+async function enter(code,nm){
+ const M=FB.m,r=M.doc(FB.db,'groups',code,'members',FB.uid),s=await M.getDoc(r);
+ if(s.exists())await M.updateDoc(r,{name:D.fb.name,last:M.serverTimestamp()});
+ else await M.setDoc(r,{name:D.fb.name,total:0,ans:0,ses:0,last:M.serverTimestamp()});
+ D.fb.g={code,name:nm};D.fb.q=[];save();GS.f={};GS.rows=null;GS.msgs=null;go('grp',{replace:true});
+}
+document.addEventListener('click',async e=>{
+ const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,d=el.dataset;
+ if(a==='send')sendMsg();
+ else if(a==='lbt'){GS.tab=d.t;render()}
+ else if(a==='retry'){stopLive();GS.err='';if(V==='lb')lbStart();else if(V==='chat')chatStart();render()}
+ else if(a==='voice'){const u=D.fb.voice;if(!u){ovm('No voice link yet','Paste a WhatsApp or Google Meet link in Settings, under Voice call link.');return}window.open(u,'_blank','noopener')}
+ else if(a==='vsave'){const u=($('#fvo').value||'').trim();if(u&&!/^https:\/\/(chat\.whatsapp\.com|call\.whatsapp\.com|wa\.me|meet\.google\.com)\//.test(u)){ovm('Link not recognised','Use a WhatsApp group or call link, or a Google Meet link. It must start with https://.');return}D.fb.voice=u;save();ovm(u?'Voice link saved':'Voice link removed',u?'The Join voice call button will open this link.':'The Join voice call button has no link now.')}
+ else if(a==='fsave'){
+  const c={};$('#fcfg').value.replace(/(\w+)\s*:\s*["']([^"']+)["']/g,(m,k,v)=>{c[k]=v});
+  if(!c.apiKey||!c.projectId||!c.appId){ovm('Config not recognised','The block is missing apiKey, projectId or appId. Copy the whole config block from the Firebase console and paste it again.');return}
+  if(!c.authDomain)c.authDomain=c.projectId+'.firebaseapp.com';
+  const had=!!FB.m;D.fb.cfg=c;save();GS.f.fcfg='';ovm('Configuration saved',had?'Close and reopen the app to apply the new project.':'Connected to project '+c.projectId+'.')}
+ else if(a==='nsave'){
+  const n=($('#fnm').value||'').trim();if(n.length<2||n.length>24){ovm('Display name','Use 2 to 24 characters.');return}
+  D.fb.name=n;save();GS.f.fnm=n;
+  if(D.fb.g&&await fbInit()){try{await FB.m.updateDoc(FB.m.doc(FB.db,'groups',D.fb.g.code,'members',FB.uid),{name:n})}catch(x){}}
+  ovm('Display name saved','Friends will see you as '+n+'.')}
+ else if(a==='gcreate'){
+  keep();const nm=(GS.f.fgn||'').trim();if(nm.length<2){ovm('Group name','Use at least 2 characters.');return}
+  if(!await fbInit()){ovm('Could not connect',FB.err);return}
+  const M=FB.m;
+  for(let k=0;k<3;k++){try{const code=mkCode();await M.setDoc(M.doc(FB.db,'groups',code),{name:nm,owner:FB.uid,created:M.serverTimestamp()});await enter(code,nm);return}catch(x){if(k===2||(x&&x.code)!=='permission-denied'){ovm('Could not create group',fe(x));return}}}}
+ else if(a==='gjoin'){
+  keep();const code=(GS.f.fgc||'').toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==6){ovm('Group code','A group code has 6 characters.');return}
+  if(!await fbInit()){ovm('Could not connect',FB.err);return}
+  try{const s=await FB.m.getDoc(FB.m.doc(FB.db,'groups',code));if(!s.exists()){ovm('Group not found','No group has that code. Check it with your friend.');return}await enter(code,s.data().name)}catch(x){ovm('Could not join group',fe(x))}}
+ else if(a==='copy'){try{await navigator.clipboard.writeText(D.fb.g.code);ovm('Code copied','Send it to your friends.')}catch(x){ovm('Group code',D.fb.g.code)}}
+ else if(a==='gask'){OV={t:'Leave group',b:'You will leave the leaderboard and chat on this device. Your solo progress is not affected.',y:'gleave',yl:'Leave group',nl:'Cancel'};render()}
+ else if(a==='gleave'){
+  const g=D.fb.g;stopLive();D.fb.g=null;D.fb.q=[];save();GS.rows=null;GS.msgs=null;
+  try{if(g&&await fbInit())await FB.m.deleteDoc(FB.m.doc(FB.db,'groups',g.code,'members',FB.uid))}catch(x){}
+  OV=null;go('grp',{replace:true})}
+});
+document.addEventListener('input',e=>{if(e.target.id==='cin')CD=e.target.value});
+document.addEventListener('keydown',e=>{if(e.target.id==='cin'&&e.key==='Enter'){e.preventDefault();sendMsg()}});
+addEventListener('online',()=>{syncQ();if(V==='lb'&&!GS.un)lbStart();if(V==='chat'&&!GS.un)chatStart()});
+setTimeout(syncQ,1500);
+
+
+const W=[
+[0,"Define aseptic technique and describe its key principles.",["Practices that prevent contamination of sterile areas or materials by microorganisms","Hand hygiene with soap and water or an alcohol-based sanitizer","Personal protective equipment such as gloves, gowns, masks and goggles","Sterile equipment and supplies, sterilized by autoclaving, chemical disinfection or filtration","A sterile field kept with sterile drapes or barriers","Careful handling that avoids contact with non-sterile surfaces","Environmental control by cleaning and limiting airflow disruption","Proper disposal of sharps and biohazardous waste"]],
+[0,"In which fields is aseptic technique crucial, and what makes it effective?",["Medicine","Pharmaceuticals","Biotechnology","Food production","It protects product safety and integrity and prevents the spread of infection","It depends on regular training and adherence to established protocols"]],
+[1,"Outline the steps of the Gram staining procedure.",["Prepare a smear on a slide, air dry it and heat fix it","Crystal violet primary stain colors all bacteria purple","Gram's iodine mordant helps crystal violet form a complex in the peptidoglycan","Decolorize with ethanol or acetone","Counterstain with safranin or basic fuchsin","Observe under a light microscope: Gram-positive purple, Gram-negative pink or red"]],
+[1,"Explain why Gram staining separates bacteria into two groups.",["It is based on differences in cell wall structure","Gram-positive bacteria have a thick peptidoglycan layer that retains the crystal violet-iodine complex","Gram-negative bacteria have a thin peptidoglycan layer and an outer membrane containing lipopolysaccharides","Decolorization disrupts the outer membrane so Gram-negative bacteria lose the stain","The method was developed by Hans Christian Gram in 1884","Some bacteria do not conform, so further tests may be needed"]],
+[2,"Compare the cell walls of Gram-positive and Gram-negative bacteria.",["Gram-positive: thick peptidoglycan, up to about 90% of the wall","Gram-negative: thin peptidoglycan, about 10% of the wall","Gram-positive walls contain teichoic and lipoteichoic acids","Gram-negative bacteria have an outer membrane with lipopolysaccharides and lipoproteins","The outer membrane contains porins that regulate passage of molecules","The Gram-negative wall is more complex and less permeable"]],
+[2,"Why are Gram-negative bacteria often more resistant to antibiotics than Gram-positive bacteria?",["The outer membrane acts as a barrier limiting antibiotic entry","Efflux pumps actively remove antibiotics from the cell","Gram-positive bacteria are more susceptible to penicillin and vancomycin, which target cell wall synthesis","LPS acts as an endotoxin and can trigger strong inflammatory responses"]],
+[3,"Distinguish prokaryotic cells from eukaryotic cells.",["Prokaryotes lack a true nucleus; DNA lies in the nucleoid","Eukaryotes have a true membrane-bound nucleus","Prokaryotes lack membrane-bound organelles; eukaryotes have mitochondria, ER, Golgi and lysosomes","Prokaryotic DNA is a single circular chromosome without histones or introns","Eukaryotic DNA is in multiple linear chromosomes with histones and introns","Prokaryotes are smaller, about 0.1 to 5 micrometers; eukaryotes about 10 to 100","Prokaryotes divide by binary fission; eukaryotes by mitosis or meiosis"]],
+[3,"State the functions of the main membrane-bound organelles in eukaryotic cells.",["Mitochondria produce energy as ATP","Endoplasmic reticulum is involved in protein synthesis and processing","Golgi apparatus modifies and packages proteins for secretion","Lysosomes carry out intracellular digestion","These organelles compartmentalize different cellular functions"]],
+[4,"Classify microbial culture media and give an example of each type.",["Nutrient agar: solid medium with beef extract, peptone and agar for general growth","Nutrient broth: liquid medium without agar","Selective media, for example MacConkey agar or Mannitol Salt agar","Differential media, for example blood agar showing hemolysis","Enriched media, for example blood or chocolate agar, for fastidious organisms","Anaerobic media containing reducing agents","Transport media preserve viability and maintain pH and osmotic balance"]],
+[4,"Differentiate selective media from differential media.",["Selective media promote growth of specific microorganisms while inhibiting others","MacConkey agar selects for Gram-negative bacteria and Mannitol Salt agar for Staphylococcus","Differential media let organisms be told apart by metabolic activity or other characteristics","Blood agar differentiates bacteria by their ability to hemolyze red blood cells"]],
+[5,"Describe the steps for operating an autoclave.",["Read the manufacturer's manual first","Load items in autoclave-safe containers so steam can penetrate","Fill the reservoir with distilled water","Close the door securely and check that the gasket is clean","Set temperature, pressure and cycle time","Start the cycle and monitor temperature and pressure","Allow cooling before opening","Open the door standing to the side and use heat-resistant gloves","Keep records and carry out routine maintenance"]],
+[5,"List the safety precautions to observe when using an autoclave.",["Read the manual and understand the safety features","Keep the door gasket clean and in good condition to prevent steam leaks","Let the autoclave cool before opening to avoid sudden steam release and burns","Stand to the side when opening the door","Use heat-resistant gloves","Remove sterilized items with sterile tools or gloves because they may still be hot"]],
+[6,"Describe the phases of the microbial growth curve.",["It describes growth in a closed system with limited nutrients","Lag phase: cells adapt and make enzymes, with no apparent increase in number","Log phase: rapid exponential increase at a constant rate, growth rate at its maximum","Stationary phase: nutrient depletion and waste buildup, growth balances death, population plateaus","Death phase: viable cells decline as death exceeds division"]],
+[6,"What are the uses of growth curves and what factors affect them?",["To study the growth kinetics of microorganisms","To assess the efficacy of antimicrobial agents","To optimize industrial fermentation processes","To understand microbial ecology and population dynamics","Factors include species, medium composition, temperature, pH and oxygen availability"]],
+[7,"Define microbiology and describe its scope and applications.",["The study of microscopic organisms","Includes bacteria, viruses, fungi, protozoa and algae","Studied with specialized instruments such as microscopes","Branches include medical, agricultural, industrial and environmental microbiology","Applications include antibiotics, vaccines, food safety and preservation","Applications also include bioremediation and genetic engineering"]],
+[7,"Describe the common structures found in microorganisms.",["Cell wall: peptidoglycan in bacteria, chitin or glucans in fungi","Plasma membrane regulates passage of molecules in and out","Cytoplasm contains ribosomes and nucleic acids","Nucleus in eukaryotes, nucleoid without a membrane in bacteria","Flagella and cilia for movement","Capsule protects against drying out and helps evade the host immune system","Pili or fimbriae for attachment and bacterial conjugation"]],
+[8,"Describe the shapes of microorganisms, giving examples.",["Cocci are spherical, for example Staphylococcus, Streptococcus and Neisseria","Bacilli are rod-shaped, for example E. coli and Bacillus anthracis","Spirilla have a rigid spiral shape, for example Spirillum and Campylobacter","Spirochetes have a flexible corkscrew shape, for example Treponema pallidum and Borrelia burgdorferi","Vibrios are comma-shaped, for example Vibrio cholerae","Pleomorphic organisms vary in shape, for example Mycoplasma","Filamentous and stalked forms exist, for example molds and Caulobacter"]],
+[8,"Describe the arrangements in which cocci can occur.",["Singly","In pairs, called diplococci","In chains, called streptococci","In clusters, called staphylococci","In groups of four, called tetrads"]],
+[9,"Describe the methods of sterilization used in a microbiology laboratory.",["Autoclaving: steam under pressure at about 121 degrees C for 15 to 20 minutes, kills spores","Dry heat: 160 to 180 degrees C for a longer time, for glassware, powders and oils","Incineration above 800 degrees C, used for disposal of contaminated materials","Chemical sterilants such as ethylene oxide, hydrogen peroxide and glutaraldehyde for heat-sensitive items","Filtration through membrane filters for heat-sensitive liquids","UV radiation damages DNA, used in biosafety cabinets and laminar flow hoods","Ionizing radiation, gamma or electron beam, for disposable supplies and medical devices"]],
+[9,"Which sterilization methods suit heat-sensitive materials, and how should a method be chosen?",["Chemical sterilization suits plastics, rubber and electronic equipment","Filtration suits heat-sensitive liquids such as media with antibiotics or proteins","Heat can damage these materials","The method depends on the nature of the material and the requirements of the procedure","Sterilized materials must be handled and stored to keep them sterile"]],
+[10,"Define medical microbiology and outline its key areas.",["The study of microorganisms relevant to human health and disease","Infectious diseases: causes, transmission and epidemiology","Pathogenesis: how microorganisms invade, evade immunity and cause damage","Diagnostic microbiology: isolating and identifying pathogens from clinical samples","Antimicrobial resistance monitoring and control","Immunology and vaccinology","Epidemiology and infection control"]],
+[10,"How do medical microbiologists diagnose infectious diseases?",["They isolate and identify pathogens from samples such as blood, urine, sputum and tissue","Microscopy","Culture","Biochemical tests","Serology","Molecular methods such as PCR","Advanced technologies such as mass spectrometry and next-generation sequencing"]],
+[11,"Why are microorganisms used as model systems in genetics, and what are the main aspects of microbial genetics?",["Rapid growth rates","Simple cellular structures","Ease of genetic manipulation","Genome structure and organization","Gene expression and its regulation","Genetic variation","Genetic analysis techniques and genetic engineering"]],
+[11,"Explain how genetic variation arises and how DNA is transferred in microorganisms.",["Mutation","Recombination","Horizontal gene transfer","Conjugation, transformation and transduction introduce foreign DNA into cells","Variation contributes to diversity, adaptation and the evolution of new traits"]],
+[11,"Name molecular techniques used in microbial genetics and applications of genetic engineering.",["PCR (polymerase chain reaction)","DNA sequencing","Gene cloning","Gene editing such as CRISPR-Cas","Engineered strains for biofuels, pharmaceuticals, enzymes and bioplastics"]]
+];
+let WR=null,wtid=null,wsv=null;
+const wcfg={mode:'self',count:5,limit:30,topics:new Set(T.map((_,i)=>i))};
+const wcnt=t=>W.filter(w=>w[0]===t).length;
+const wpool=()=>W.map((_,i)=>i).filter(i=>wcfg.topics.has(W[i][0]));
+const wtot=()=>WR.items.reduce((a,x)=>[a[0]+x.tick.length,a[1]+W[x.id][2].length],[0,0]);
+const wt=()=>WR.mode==='exam'?fmt(WR.lim*60-WR.el):fmt(WR.el);
+function wsave(){if(!WR||WR.done)return;D.w.run=WR;save()}
+function wstop(){clearInterval(wtid);wtid=null}
+function wtimer(){
+ wstop();if(WR.mode==='exam'&&WR.ph!=='write')return;
+ wtid=setInterval(()=>{WR.el++;const e=$('#wtm');
+  if(e&&V==='wsess'){e.textContent=wt();e.classList.toggle('low',WR.mode==='exam'&&WR.lim*60-WR.el<60)}
+  if(WR.mode==='exam'&&WR.el>=WR.lim*60){wtoMark(true);return}
+  if(WR.el%5===0)wsave()},1000);
+}
+function wtoMark(auto){
+ wstop();WR.ph='mark';WR.i=0;wsave();
+ if(V==='wsess'){OV=auto?{t:'Time is up',b:'Your answers were submitted. Now mark each one against the key points.',y:'cancel',yl:'Start marking',nl:'Close'}:null;render();scrollTo(0,0)}
+}
+function wstart(){
+ let ids=shuf(wpool());if(wcfg.count&&wcfg.count<ids.length)ids=ids.slice(0,wcfg.count);
+ WR={mode:wcfg.mode,lim:wcfg.mode==='exam'?wcfg.limit:0,el:0,i:0,ph:'write',items:ids.map(id=>({id,ans:'',tick:[],shown:false}))};
+ wsave();wtimer();go('wsess',{replace:true});
+}
+function wfinish(){
+ wstop();const[s,x]=wtot();WR.done=true;D.w.run=null;
+ D.w.hist.unshift({d:Date.now(),m:WR.mode,n:WR.items.length,s,x,t:WR.el});D.w.hist=D.w.hist.slice(0,30);save();go('wres',{replace:true});
+}
+function wset(){
+ const p=wpool().length,cs=[5,10,15].filter(n=>n<p).concat([0]),ex=wcfg.mode==='exam';
+ return `<div class="row sp"><button class="ib" data-a="hb" data-f="home" aria-label="Back">${IC.l}</button><span class="eb">Written test</span><span style="width:42px"></span></div>
+ <h1 style="margin:16px 0 4px;font-size:28px">Written test</h1>
+ <p class="mu sm" style="margin:0 0 6px">${p} question${p===1?'':'s'} in the current pool. Type your answer, then mark yourself against the key points from your notes.</p>
+ <h3 class="sec">Mode</h3>
+ <div class="seg"><button class="${ex?'':'on'}" data-a="wmode" data-m="self">Self-marking</button><button class="${ex?'on':''}" data-a="wmode" data-m="exam">Timed exam</button></div>
+ <p class="mu sm">${ex?'Answer every question against the clock. Marking starts after you submit or when time runs out.':'After each answer the key points are revealed and you tick the ones you covered.'}</p>
+ <div class="row sp sec"><h3>Topics</h3><span class="sm"><button data-a="wall" style="color:var(--am)">Select all</button> <span class="mu">/</span> <button data-a="wnone" style="color:var(--am)">Clear</button></span></div>
+ <div class="chips">${T.map((n,i)=>`<button class="chip ${wcfg.topics.has(i)?'on':''}" data-a="wtgl" data-t="${i}">${n}</button>`).join('')}</div>
+ <h3 class="sec">Number of questions</h3>
+ <div class="seg">${cs.map(n=>`<button class="${wcfg.count===n?'on':''}" data-a="wcn" data-n="${n}">${n||'All'}</button>`).join('')}</div>
+ ${ex?`<h3 class="sec">Time limit</h3><div class="seg">${[15,30,45,60].map(n=>`<button class="${wcfg.limit===n?'on':''}" data-a="wlim" data-n="${n}">${n} min</button>`).join('')}</div>`:''}
+ <div class="stk"><button class="btn ${p?'':'off'}" data-a="wstart">Start written test</button></div>`;
+}
+function wsess(){
+ const it=WR.items[WR.i],w=W[it.id],n=WR.items.length,mark=WR.ph==='mark'||(WR.mode==='self'&&it.shown),last=WR.i===n-1;
+ const ans=mark?`<div class="card" style="margin-bottom:6px"><div class="eb">Your answer</div><div style="white-space:pre-wrap;margin-top:6px">${it.ans.trim()?esc(it.ans):'<span class="mu">No answer was written.</span>'}</div></div>`
+  :`<textarea class="inp" id="wans" style="min-height:240px;font:15px/1.5 Inter,system-ui,sans-serif" aria-label="Your answer" autocomplete="off">${esc(it.ans)}</textarea>`;
+ const kp=mark?`<div class="eb" style="margin:18px 0 8px">Key points. Tick what you covered.</div>${w[2].map((k,j)=>{const on=it.tick.includes(j);return `<button class="opt ${on?'ok':''}" data-a="wtick" data-j="${j}"><span class="k">${on?IC.check:j+1}</span><span>${esc(k)}</span></button>`}).join('')}<div class="mono sm mu">${it.tick.length} of ${w[2].length} marks</div>`:'';
+ const btn=mark?(last?'<button class="btn" data-a="wfin">Finish</button>':`<button class="btn" data-a="wnext">Next ${IC.r}</button>`):WR.mode==='self'?'<button class="btn" data-a="wshow">Show key points</button>':(last?'<button class="btn" data-a="wask">Submit</button>':`<button class="btn" data-a="wnext">Next ${IC.r}</button>`);
+ return `<div class="top"><button class="ib" data-a="wquit" aria-label="Leave">${IC.x}</button><div><div class="eb">${T[w[0]]}</div><div class="mono sm mu">${WR.i+1} of ${n}</div></div>${WR.ph==='mark'?'<div class="tm">Marking</div>':`<div class="tm ${WR.mode==='exam'&&WR.lim*60-WR.el<60?'low':''}" id="wtm">${wt()}</div>`}</div>
+ <div class="pg"><i style="width:${(WR.i+1)/n*100}%"></i></div>
+ <div class="q" style="margin-bottom:6px">${esc(w[1])}</div><div class="mono sm mu" style="margin-bottom:14px">${w[2].length} marks</div>
+ ${ans}${kp}<div style="height:76px"></div>
+ <div class="foot"><div><button class="ib" data-a="wprev" aria-label="Previous" ${WR.i?'':'style="opacity:.35"'}>${IC.l}</button>${btn}</div></div>`;
+}
+function wres(){
+ const[s,x]=wtot(),p=pct(s,x);
+ return `<div class="eb">Written test complete</div><h1 style="margin:8px 0 0;font-size:28px">${p>=70?'Strong result':p>=50?'Solid progress':'Keep practicing'}</h1>
+ <div class="stats"><div class="stat"><b>${s}/${x}</b><span>Marks</span></div><div class="stat"><b>${p}%</b><span>Score</span></div><div class="stat"><b>${fmt(WR.el)}</b><span>Time used</span></div></div>
+ <h3 class="sec">By question</h3>
+ ${WR.items.map(it=>{const w=W[it.id];return `<div class="trow" style="cursor:default"><div class="row sp"><span style="flex:1;min-width:0">${esc(w[1])}</span><span class="mono sm mu">${it.tick.length}/${w[2].length}</span></div><div class="bar"><i style="width:${pct(it.tick.length,w[2].length)}%"></i></div></div>`}).join('')}
+ <div class="stk"><button class="btn" data-a="go" data-v="wset">Start another written test</button><button class="btn g" data-a="go" data-v="home">Return home</button></div>`;
+}
+document.addEventListener('input',e=>{if(e.target.id==='wans'&&WR&&WR.ph==='write'){WR.items[WR.i].ans=e.target.value;clearTimeout(wsv);wsv=setTimeout(wsave,700)}});
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,d=el.dataset,keepY=()=>{const y=scrollY;render();scrollTo(0,y)};
+ if(a==='wmode'){wcfg.mode=d.m;render()}
+ else if(a==='wtgl'){const t=+d.t;wcfg.topics.has(t)?wcfg.topics.delete(t):wcfg.topics.add(t);render()}
+ else if(a==='wall'){wcfg.topics=new Set(T.map((_,i)=>i));render()}
+ else if(a==='wnone'){wcfg.topics=new Set();render()}
+ else if(a==='wcn'){wcfg.count=+d.n;render()}
+ else if(a==='wlim'){wcfg.limit=+d.n;render()}
+ else if(a==='wstart')wstart();
+ else if(a==='wresume'){const r=D.w.run;if(!r)return;WR=r;if(WR.mode==='exam'&&WR.ph==='write'&&WR.el>=WR.lim*60){WR.ph='mark';WR.i=0}wtimer();go('wsess')}
+ else if(a==='wdisc'){D.w.run=null;save();render()}
+ else if(a==='wtick'){const it=WR.items[WR.i],j=+d.j,k=it.tick.indexOf(j);k>=0?it.tick.splice(k,1):it.tick.push(j);wsave();keepY()}
+ else if(a==='wshow'){WR.items[WR.i].shown=true;wsave();render();scrollTo(0,0)}
+ else if(a==='wnext'){if(WR.i<WR.items.length-1){WR.i++;wsave();render();scrollTo(0,0)}}
+ else if(a==='wprev'){if(WR.i>0){WR.i--;wsave();render();scrollTo(0,0)}}
+ else if(a==='wask'){const u=WR.items.filter(x=>!x.ans.trim()).length;OV={t:'Submit answers',b:u?`${u} question${u===1?' has':'s have'} no answer yet. Submit anyway and start marking?`:'Submit your answers and start marking?',y:'wsub',yl:'Submit',nl:'Keep writing'};render()}
+ else if(a==='wsub')wtoMark(false);
+ else if(a==='wfin')wfinish();
+ else if(a==='wquit'){OV={t:'Leave this test',b:'Your answers and place are saved. Resume from the home screen whenever you are ready.',y:'wleave',yl:'Save and leave',nl:'Stay'};render()}
+ else if(a==='wleave'){wsave();wstop();if(HD>0)history.back();else go('home',{replace:true})}
+});
+
+function home(){
+ const t=tally(),m=D.missed.length;
+ return `${topbar('MCB 201',`<button class="ib" data-a="theme" aria-label="Toggle brightness">${theme()==='light'?IC.moon:IC.sun}</button>`)}
+ <h1 style="margin-top:14px">Microbiology</h1>
+ <p class="mu" style="margin:8px 0 0">${Q.length} questions built from your lecture notes across ${T.length} topics.</p>
+ <div class="stats"><div class="stat"><b>${t.a}</b><span>Answered</span></div><div class="stat"><b>${pct(t.c,t.a)}%</b><span>Accuracy</span></div><div class="stat"><b>${D.hist.length}</b><span>Sessions</span></div></div>
+ ${D.run?`<button class="tile" data-a="resume"><span class="ic">${IC.r}</span><span><b>Resume saved session</b><span class="mu sm">${MN[D.run.mode]}, question ${D.run.i+1} of ${D.run.items.length}</span></span></button><button class="sm mu" data-a="disc" style="margin:-2px 0 12px 4px">Discard saved session</button>`:''}
+ ${D.w.run?`<button class="tile" data-a="wresume"><span class="ic">${IC.r}</span><span><b>Resume written test</b><span class="mu sm">${D.w.run.mode==='exam'?'Timed exam':'Self-marking'}, question ${D.w.run.i+1} of ${D.w.run.items.length}</span></span></button><button class="sm mu" data-a="wdisc" style="margin:-2px 0 12px 4px">Discard saved written test</button>`:''}
+ <button class="tile" data-a="mode" data-m="practice"><span class="ic">${IC.prac}</span><span><b>Practice session</b><span class="mu sm">Instant feedback and explanation after every answer</span></span></button>
+ <button class="tile" data-a="mode" data-m="exam"><span class="ic">${IC.clock}</span><span><b>Timed exam</b><span class="mu sm">Countdown timer, answers revealed at the end</span></span></button>
+ <button class="tile ${m?'':'off'}" data-a="mode" data-m="missed"><span class="ic">${IC.rep}</span><span><b>Missed questions</b><span class="mu sm">${m?m+' to revisit':'Nothing missed yet'}</span></span></button>
+ <button class="tile" data-a="go" data-v="wset"><span class="ic">${IC.pen}</span><span><b>Written test</b><span class="mu sm">Type full answers, then mark against key points</span></span></button>
+ <button class="tile" data-a="go" data-v="notes"><span class="ic">${IC.book}</span><span><b>Study notes</b><span class="mu sm">Read the full notes for every topic</span></span></button>
+ <h2 class="sec">Topics</h2>
+ ${T.map((n,i)=>{const s=D.stats[i],p=s?pct(s.c,s.a):0;return `<button class="trow" data-a="topic" data-t="${i}"><div class="row sp"><b style="font-weight:500">${n}</b><span class="mono sm mu">${s?p+'%':tcount(i)+' Q'}</span></div><div class="bar"><i style="width:${p}%"></i></div></button>`}).join('')}`;
+}
+function setup(){
+ const m=cfg.mode,p=pool().length,ms=m==='missed';
+ const cs=[10,20,40].filter(n=>n<p).concat([0]);
+ const ttl={practice:'Practice session',exam:'Timed exam',missed:'Missed questions'}[m];
+ return `<div class="row sp"><button class="ib" data-a="hb" data-f="home" aria-label="Back">${IC.l}</button><span class="eb">Session setup</span><span style="width:42px"></span></div>
+ <h1 style="margin:16px 0 4px;font-size:28px">${ttl}</h1>
+ <p class="mu sm" style="margin:0 0 6px">${p} question${p===1?'':'s'} in the current pool.</p>
+ ${ms?'':`<div class="row sp sec"><h3>Topics</h3><span class="sm"><button data-a="all" style="color:var(--am)">Select all</button> <span class="mu">/</span> <button data-a="none" style="color:var(--am)">Clear</button></span></div>
+ <div class="chips">${T.map((n,i)=>`<button class="chip ${cfg.topics.has(i)?'on':''}" data-a="tgl" data-t="${i}">${n}</button>`).join('')}</div>`}
+ <h3 class="sec">Number of questions</h3>
+ <div class="seg">${cs.map(n=>`<button class="${cfg.count===n?'on':''}" data-a="cnt" data-n="${n}">${n||'All'}</button>`).join('')}</div>
+ <h3 class="sec">Time limit</h3>
+ <div class="seg">${[0,10,20,30,45].map(n=>`<button class="${cfg.limit===n?'on':''}" data-a="lim" data-n="${n}">${n?n+' min':'None'}</button>`).join('')}</div>
+ <p class="mu sm">${cfg.limit?'The session submits automatically when time runs out.':'A stopwatch tracks how long the session takes.'}</p>
+ <div class="stk"><button class="btn ${p?'':'off'}" data-a="start">Start session</button></div>`;
+}
+function tmTxt(){return R.lim?fmt(R.lim*60-R.el):fmt(R.el)}
+function sess(){
+ const it=R.items[R.i],q=Q[it.id],f=fb(),done=it.sel>=0,cp=it.order.indexOf(0),n=R.items.length;
+ const opts=it.order.map((k,p)=>{let c='';if(f&&done)c=p===cp?'ok':p===it.sel?'bad':'dim';else if(!f&&p===it.sel)c='sel';else if(it.rm&&it.rm.includes(p))c='rm';
+  return `<button class="opt ${c}" data-a="pick" data-i="${p}"><span class="k">${'ABCD'[p]}</span><span>${q[2+k]}</span></button>`}).join('');
+ const low=R.lim&&R.lim*60-R.el<60;
+ const last=R.i===n-1;
+ let g='';
+ if(G)g=`<div class="ov" data-a="grid"><div class="sheet" data-a="stop"><div class="row sp"><h3>Questions</h3><button class="ib" data-a="grid" aria-label="Close">${IC.x}</button></div>
+ <div class="gr">${R.items.map((x,i)=>`<button class="${i===R.i?'cu':x.sel>=0?'an':''} ${x.flag?'fl':''}" data-a="jump" data-i="${i}">${i+1}</button>`).join('')}</div>
+ <p class="mu sm">Highlighted numbers are answered. An outline marks a flagged question.</p><button class="btn" data-a="ask">Submit session</button></div></div>`;
+ return `<div class="top"><button class="ib" data-a="quit" aria-label="Leave session">${IC.x}</button><div><div class="eb">${T[q[0]]}</div><div class="mono sm mu">${R.i+1} of ${n}</div></div><div class="tm ${low?'low':''}" id="tm">${tmTxt()}</div></div>
+ <div class="pg"><i style="width:${(R.i+(done?1:0))/n*100}%"></i></div>
+ <div class="q">${q[1]}</div>${opts}
+ ${f&&done?`<div class="fb ${it.sel===cp?'ok':'bad'}"><b>${it.sel===cp?'Correct':'Incorrect'}</b><p>${q[6]}</p></div>`:''}
+ ${f&&it.hint&&!done?`<div class="fb hint"><b>Hint</b><p>Two incorrect options have been removed. Related notes: ${N[q[0]].title}.</p><button class="lk" data-a="note" data-t="${q[0]}" data-b="sess">${IC.book} Open notes</button></div>`:''}
+ <div style="height:70px"></div>
+ <div class="foot"><div>
+  <button class="ib" data-a="prev" aria-label="Previous" ${R.i?'':'style="opacity:.35"'}>${IC.l}</button>
+  <button class="ib" data-a="grid" aria-label="Question list">${IC.grid}</button>
+  ${f?`<button class="ib ${it.hint?'fl':''}" data-a="hint" aria-label="Hint" ${done||it.hint?'style="opacity:.4"':''}>${IC.bulb}</button>`:`<button class="ib ${it.flag?'fl':''}" data-a="flag" aria-label="Flag question">${IC.flag}</button>`}
+  ${last?`<button class="btn" data-a="ask">Finish</button>`:`<button class="btn" data-a="next">Next ${IC.r}</button>`}
+ </div></div>${g}`;
+}
+function res(){
+ const it=R.items,n=it.length,c=it.filter(x=>x.sel>=0&&x.order.indexOf(0)===x.sel).length,a=it.filter(x=>x.sel>=0).length,p=pct(c,n),C=2*Math.PI*52;
+ const bt={};it.forEach(x=>{const t=Q[x.id][0];(bt[t]||(bt[t]={n:0,c:0}));bt[t].n++;if(x.sel>=0&&x.order.indexOf(0)===x.sel)bt[t].c++});
+ return `<div class="eb">Session complete</div><h1 style="margin-top:8px;font-size:28px">${p>=70?'Strong result':p>=50?'Solid progress':'Keep practicing'}</h1>
+ <div class="ring" style="position:relative"><svg viewBox="0 0 120 120" style="width:170px;height:170px"><circle cx="60" cy="60" r="52" stroke="var(--s2)" stroke-width="9"/><circle cx="60" cy="60" r="52" stroke="var(--am)" stroke-width="9" stroke-dasharray="${C*p/100} ${C}" transform="rotate(-90 60 60)"/></svg><div><b class="mono" style="font-size:34px">${p}%</b><div class="mu sm">${c} of ${n}</div></div></div>
+ <div class="stats"><div class="stat"><b>${c}</b><span>Correct</span></div><div class="stat"><b>${a-c}</b><span>Incorrect</span></div><div class="stat"><b>${fmt(R.el)}</b><span>Time used</span></div></div>
+ ${n-a?`<p class="mu sm">${n-a} question${n-a===1?' was':'s were'} left unanswered.</p>`:''}
+ ${it.some(x=>x.hint)?`<p class="mu sm">Hints used on ${it.filter(x=>x.hint).length} question${it.filter(x=>x.hint).length===1?'':'s'}.</p>`:''}
+ <h3 class="sec">By topic</h3>${Object.keys(bt).map(t=>`<div class="trow" style="cursor:default"><div class="row sp"><span>${T[t]}</span><span class="mono sm mu">${bt[t].c}/${bt[t].n}</span></div><div class="bar"><i style="width:${pct(bt[t].c,bt[t].n)}%"></i></div></div>`).join('')}
+ <div class="stk"><button class="btn" data-a="rev">Review answers</button><button class="btn g" data-a="again">Start another session</button><button class="btn g" data-a="go" data-v="home">Return home</button></div>`;
+}
+function rev(){
+ const list=R.items.map((x,i)=>({x,i})).filter(({x})=>RF==='all'||x.sel<0||x.order.indexOf(0)!==x.sel);
+ return `<div class="row sp"><button class="ib" data-a="hb" data-f="res" aria-label="Back">${IC.l}</button><span class="eb">Review</span><span style="width:42px"></span></div>
+ <div class="seg" style="margin:16px 0"><button class="${RF==='all'?'on':''}" data-a="rf" data-f="all">All</button><button class="${RF==='wrong'?'on':''}" data-a="rf" data-f="wrong">Incorrect</button></div>
+ ${list.length?list.map(({x,i})=>{const q=Q[x.id],cp=x.order.indexOf(0);return `<div class="card rv"><div class="eb">Question ${i+1} / ${T[q[0]]}</div><div style="font-weight:500;margin:6px 0 12px">${q[1]}</div>
+  ${x.order.map((k,p)=>`<div class="opt ${p===cp?'ok':p===x.sel?'bad':'dim'}"><span class="k">${'ABCD'[p]}</span><span>${q[2+k]}</span><span class="tag">${p===cp?'Correct':p===x.sel?'Your answer':''}</span></div>`).join('')}
+  ${x.sel<0?'<div class="mu sm">Not answered.</div>':''}<p class="mu sm" style="margin:8px 0 0">${q[6]}</p></div>`}).join(''):'<p class="mu">Every question in this session was answered correctly.</p>'}`;
+}
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function notes(){
+ return `${topbar('Study notes')}<h1 style="margin:14px 0 0;font-size:28px">Your lecture notes</h1><p class="mu sm" style="margin:8px 0 16px">The full text of your three documents, organized by topic.</p>
+ ${N.map((n,i)=>`<button class="tile" data-a="note" data-t="${i}" data-b="notes"><span class="ic">${IC.book}</span><span><b>${n.title}</b><span class="mu sm">${tcount(i)} practice questions</span></span></button>`).join('')}`;
+}
+function note(){
+ const n=N[NT];
+ return `<div class="row sp"><button class="ib" data-a="hb" data-f="notes" aria-label="Back">${IC.l}</button><span class="eb">Notes</span><span style="width:42px"></span></div>
+ <h1 style="margin:16px 0 14px;font-size:28px">${n.title}</h1>
+ <div class="nt">${n.b.map(b=>b.t==='h'?`<h3>${esc(b.x)}</h3>`:b.t==='li'?`<div class="li">${b.h?`<b>${esc(b.h)}</b>`:''}${esc(b.x)}</div>`:`<p>${esc(b.x)}</p>`).join('')}</div>
+ ${NB==='sess'?'':`<div class="stk"><button class="btn" data-a="topic" data-t="${NT}">Practice this topic</button></div>`}`;
+}
+function settings(){
+ const P=[['green','Black and green','Pure black surfaces with a green accent','#000','#4ade80'],['amber','Black and amber','Warm dark surfaces with an amber accent','#0f0e0c','#e9a93b']];
+ return `<div class="row sp"><button class="ib" data-a="hb" data-f="home" aria-label="Back">${IC.l}</button><span class="eb">Settings</span><span style="width:42px"></span></div>
+ <h1 style="margin:16px 0 0;font-size:28px">Appearance</h1>
+ <h3 class="sec">Color palette</h3>
+ ${P.map(([k,n,ds,a,b])=>`<button class="tile ${pal()===k?'on':''}" data-a="pal" data-p="${k}"><span class="sw" style="background:linear-gradient(135deg,${a} 50%,${b} 50%)"></span><span><b>${n}</b><span class="mu sm">${ds}</span></span>${pal()===k?`<span style="margin-left:auto;color:var(--am)">${IC.check}</span>`:''}</button>`).join('')}
+ <h3 class="sec">Brightness</h3>
+ <div class="seg"><button class="${theme()==='dark'?'on':''}" data-a="br" data-b="dark">Dark</button><button class="${theme()==='light'?'on':''}" data-a="br" data-b="light">Light</button></div>${settingsMore()}`;
+}
+function prog(){
+ const t=tally();
+ return `${topbar('Progress')}<h1 style="margin:14px 0 0;font-size:28px">Your performance</h1>
+ <div class="stats"><div class="stat"><b>${t.a}</b><span>Answered</span></div><div class="stat"><b>${pct(t.c,t.a)}%</b><span>Accuracy</span></div><div class="stat"><b>${D.missed.length}</b><span>To revisit</span></div></div>
+ <h3 class="sec">Mastery by topic</h3>
+ ${T.map((n,i)=>{const s=D.stats[i]||{a:0,c:0},p=pct(s.c,s.a);return `<div class="trow" style="cursor:default"><div class="row sp"><span>${n}</span><span class="mono sm mu">${s.a?p+'% of '+s.a:'Not started'}</span></div><div class="bar"><i style="width:${p}%"></i></div></div>`}).join('')}
+ <h3 class="sec">Recent sessions</h3>
+ ${D.hist.length?D.hist.slice(0,10).map(h=>`<div class="hist"><div><b style="font-weight:500">${{practice:'Practice',exam:'Timed exam',missed:'Missed questions'}[h.m]}</b><div class="mu sm">${new Date(h.d).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})}</div></div><div class="mono" style="text-align:right">${h.c}/${h.n}<div class="mu sm">${fmt(h.t)}</div></div></div>`).join(''):'<p class="mu sm">Completed sessions are listed here with their score and duration.</p>'}
+ ${D.w.hist.length?`<h3 class="sec">Written tests</h3>${D.w.hist.slice(0,5).map(h=>`<div class="hist"><div><b style="font-weight:500">${h.m==='exam'?'Timed exam':'Self-marking'}</b><div class="mu sm">${new Date(h.d).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'})}</div></div><div class="mono" style="text-align:right">${h.s}/${h.x}<div class="mu sm">${fmt(h.t)}</div></div></div>`).join('')}`:''}
+ <h3 class="sec">Data and storage</h3>
+ <div class="card sm mu">${ST.persisted?'Persistent storage is granted, so the browser will not clear your progress automatically.':'Progress is saved on this device using local storage and IndexedDB. Export a backup to keep a separate copy.'}</div>
+ <div class="stk">
+  <button class="btn g" data-a="exp">${IC.dl} Export backup</button>
+  <button class="btn g" data-a="imp">${IC.up} Import backup</button>
+  <button class="btn g" data-a="c" data-k="hist">Clear session history</button>
+  <button class="btn g" data-a="c" data-k="missed">Clear missed questions</button>
+  <button class="btn g" data-a="c" data-k="stats">Clear topic accuracy</button>
+  <button class="btn g danger" data-a="c" data-k="all">${IC.trash} Clear all data</button>
+ </div>`;
+}
+function ovl(){
+ return `<div class="ov"><div class="sheet"><h2>${OV.t}</h2><p class="mu">${OV.b}</p><div class="stk"><button class="btn" data-a="${OV.y}">${OV.yl}</button><button class="btn g" data-a="cancel">${OV.nl}</button></div></div></div>`;
+}
+function render(){
+ applyTheme();
+ app.innerHTML=({home,setup,sess,res,rev,prog,notes,note,settings,grp,lb,chat,gset,wset,wsess,wres})[V]()+(OV?ovl():'');
+ const show=['home','setup','prog','notes','grp'].includes(V);
+ nav.style.display=show?'flex':'none';
+ if(show)nav.innerHTML=[['home','home','Home'],['setup','prac','Practice'],['notes','book','Notes'],['prog','chart','Progress'],['grp','users','Group']].map(([v,i,l])=>`<button class="${V===v&&(v!=='setup'||cfg.mode==='practice')?'on':''}" data-a="nav" data-v="${v}">${IC[i]}<span>${l}</span></button>`).join('');
+}
+function go(v,o={}){
+ if((v==='lb'||v==='chat')&&!D.fb.g)v='grp';
+ if(v!==V)stopLive();if(V==='wsess'&&v!=='wsess'){wsave();wstop()}V=v;OV=null;G=false;
+ if(!o.pop){if(o.replace)history.replaceState({v,n:HD},'');else{HD++;history.pushState({v,n:HD},'')}}
+ render();scrollTo(0,0);
+ if(v==='lb')lbStart();if(v==='chat')chatStart();
+}
+function stop(){clearInterval(tid);tid=null}
+function saveRun(){D.run={mode:cfg.mode,i:R.i,el:R.el,lim:R.lim,items:R.items};save()}
+function startTimer(){
+ stop();tid=setInterval(()=>{R.el++;
+  if(V==='sess'){const e=$('#tm');if(e){e.textContent=tmTxt();e.classList.toggle('low',!!R.lim&&R.lim*60-R.el<60)}}
+  if(R.lim&&R.el>=R.lim*60){finish();return}
+  if(R.el%5===0)saveRun()},1000);
+}
+function begin(){
+ let ids=shuf(pool());if(cfg.count&&cfg.count<ids.length)ids=ids.slice(0,cfg.count);
+ R={items:ids.map(id=>({id,order:shuf([0,1,2,3]),sel:-1,flag:false,rec:false,hint:false,rm:null})),i:0,el:0,lim:cfg.limit};
+ if(cfg.mode!=='missed'&&cfg.count)D.pref.count=cfg.count;
+ saveRun();startTimer();RF='all';go('sess',{replace:true});
+}
+function finish(){
+ stop();D.run=null;
+ if(!fb())R.items.forEach(x=>{if(x.sel>=0&&!x.rec){rec(x.id,x.order.indexOf(0)===x.sel);x.rec=true}});
+ const c=R.items.filter(x=>x.sel>=0&&x.order.indexOf(0)===x.sel).length;
+ if(R.items.some(x=>x.sel>=0)){D.hist.unshift({d:Date.now(),m:cfg.mode,n:R.items.length,c,t:R.el});D.hist=D.hist.slice(0,30);qSession({d:D.hist[0].d,m:cfg.mode,n:R.items.length,c,a:R.items.filter(x=>x.sel>=0).length,t:R.el});save()}
+ save();go('res',{replace:true});
+}
+function openSetup(m,pre,o){
+ cfg.mode=m;cfg.limit=m==='exam'?20:0;
+ if(pre!=null)cfg.topics=new Set([pre]);else if(!cfg.topics.size||m!==V)cfg.topics=new Set(T.map((_,i)=>i));
+ if(m==='missed')cfg.count=0;else if(!cfg.count)cfg.count=20;
+ go('setup',o);
+}
+document.addEventListener('click',e=>{
+ const el=e.target.closest('[data-a]');if(!el)return;
+ const a=el.dataset.a,d=el.dataset;
+ if(a==='stop')return;
+ if(a==='theme'){D.theme=theme()==='light'?'dark':'light';save();render()}
+ else if(a==='go')go(d.v);
+ else if(a==='nav'){if(d.v===V&&(V!=='setup'||cfg.mode==='practice'))return;if(d.v==='setup')openSetup('practice',null,{replace:true});else go(d.v,{replace:true})}
+ else if(a==='hb'){if(HD>0)history.back();else go(d.f,{replace:true})}
+ else if(a==='pal'){D.pal=d.p;save();render()}
+ else if(a==='br'){D.theme=d.b;save();render()}
+ else if(a==='mode')openSetup(d.m);
+ else if(a==='topic'){cfg.count=20;openSetup('practice',+d.t)}
+ else if(a==='tgl'){const t=+d.t;cfg.topics.has(t)?cfg.topics.delete(t):cfg.topics.add(t);render()}
+ else if(a==='all'){cfg.topics=new Set(T.map((_,i)=>i));render()}
+ else if(a==='none'){cfg.topics=new Set();render()}
+ else if(a==='cnt'){cfg.count=+d.n;render()}
+ else if(a==='lim'){cfg.limit=+d.n;render()}
+ else if(a==='start')begin();
+ else if(a==='pick'){const it=R.items[R.i];if(fb()&&it.sel>=0)return;if(it.rm&&it.rm.includes(+d.i))return;it.sel=+d.i;if(fb()){rec(it.id,it.order.indexOf(0)===it.sel);it.rec=true}saveRun();render()}
+ else if(a==='next'){if(R.i<R.items.length-1){R.i++;saveRun();render();scrollTo(0,0)}}
+ else if(a==='prev'){if(R.i>0){R.i--;saveRun();render();scrollTo(0,0)}}
+ else if(a==='flag'){R.items[R.i].flag=!R.items[R.i].flag;saveRun();render()}
+ else if(a==='grid'){G=!G;render()}
+ else if(a==='jump'){R.i=+d.i;G=false;saveRun();render();scrollTo(0,0)}
+ else if(a==='ask'){G=false;const u=R.items.filter(x=>x.sel<0).length;OV={t:'Submit session',b:u?`${u} question${u===1?' is':'s are'} still unanswered. Submit anyway?`:'All questions are answered. Submit your session?',y:'fin',yl:'Submit',nl:'Keep working'};render()}
+ else if(a==='fin')finish();
+ else if(a==='quit'){OV={t:'Leave this session',b:'Your place and answers are saved. Resume this session from the home screen whenever you are ready.',y:'leave',yl:'Save and leave',nl:'Stay'};render()}
+ else if(a==='leave'){saveRun();stop();if(HD>0)history.back();else go('home',{replace:true})}
+ else if(a==='hint'){const it=R.items[R.i];if(!fb()||it.sel>=0||it.hint)return;const cp=it.order.indexOf(0);it.rm=shuf([0,1,2,3].filter(x=>x!==cp)).slice(0,2);it.hint=true;saveRun();render()}
+ else if(a==='resume'){const r=D.run;if(!r)return;cfg.mode=r.mode;R={items:r.items,i:r.i,el:r.el,lim:r.lim};if(R.lim&&R.el>=R.lim*60){finish();return}startTimer();RF='all';go('sess')}
+ else if(a==='disc'){D.run=null;save();render()}
+ else if(a==='note'){NT=+d.t;NB=d.b;go('note')}
+ else if(a==='nback')go(NB);
+ else if(a==='exp'){const b=new Blob([JSON.stringify(D)],{type:'application/json'}),u=URL.createObjectURL(b),l=document.createElement('a');l.href=u;l.download='mcb201-backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
+ else if(a==='imp')$('#imp').click();
+ else if(a==='c'){CK=d.k;const m={hist:['Clear session history','This removes the list of completed sessions. Accuracy and missed questions are kept.'],missed:['Clear missed questions','This empties the missed questions list. Accuracy and history are kept.'],stats:['Clear topic accuracy','This resets answered counts and accuracy for every topic. History and missed questions are kept.'],all:['Clear all data','This removes accuracy, missed questions, history, any saved session and your theme choice from this device.']}[CK];OV={t:m[0],b:m[1],y:'cdo',yl:'Clear',nl:'Cancel'};render()}
+ else if(a==='cdo'){if(CK==='hist')D.hist=[];else if(CK==='missed')D.missed=[];else if(CK==='stats')D.stats={};else{const f=D.fb;D=D0();D.fb=f;cfg.count=20;cfg.limit=0}save();OV=null;render()}
+ else if(a==='cancel'){OV=null;render()}
+ else if(a==='rev'){RF='all';go('rev')}
+ else if(a==='back')go('res');
+ else if(a==='rf'){RF=d.f;render()}
+ else if(a==='again')openSetup(cfg.mode);
+});
+$('#imp').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+ r.onload=()=>{try{const o=JSON.parse(r.result);if(!o||typeof o.stats!=='object'||!Array.isArray(o.missed)||!Array.isArray(o.hist))throw 0;merge(o);save();cfg.count=D.pref.count||20;OV={t:'Backup imported',b:'Your progress was restored from the backup file.',y:'cancel',yl:'Done',nl:'Close'}}catch(x){OV={t:'Import failed',b:'That file is not a valid MCB 201 backup.',y:'cancel',yl:'Close',nl:'Cancel'}}render()};
+ r.readAsText(f);e.target.value=''});
+addEventListener('popstate',e=>{
+ const st=e.state||{v:'home',n:0},was=V,prev=HD;HD=st.n||0;
+ if(was==='sess'&&st.v!=='sess'&&tid){HD=prev;history.pushState({v:'sess',n:HD},'');G=false;OV={t:'Leave this session',b:'Your place and answers are saved. Resume this session from the home screen whenever you are ready.',y:'leave',yl:'Save and leave',nl:'Stay'};render();return}
+ let t=st.v;
+ if((t==='sess'&&!tid)||((t==='res'||t==='rev')&&!R)||((t==='wsess'||t==='wres')&&!WR))t='home';
+ go(t,{pop:true});
+ if(t!==st.v)history.replaceState({v:t,n:HD},'');
+});
+['copy','cut','contextmenu','dragstart'].forEach(t=>document.addEventListener(t,e=>{if(!/^(INPUT|TEXTAREA)$/.test(e.target.tagName||''))e.preventDefault()}));
+document.addEventListener('selectstart',e=>{if(!/^(INPUT|TEXTAREA)$/.test(e.target.tagName||''))e.preventDefault()});
+['gesturestart','gesturechange','gestureend'].forEach(t=>document.addEventListener(t,e=>e.preventDefault()));
+document.addEventListener('touchmove',e=>{if(e.touches.length>1)e.preventDefault()},{passive:false});
+history.replaceState({v:'home',n:0},'');
+render();
+if(!had)idbGet().then(v=>{if(v){try{merge(JSON.parse(v));cfg.count=D.pref.count||20;render()}catch(e){}}});
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().then(x=>{ST.persisted=x;if(V==='prog')render()})}catch(e){}
+</script>
+</body>
+</html>
