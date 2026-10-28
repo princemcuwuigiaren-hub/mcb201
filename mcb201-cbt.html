@@ -97,6 +97,8 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 img,svg{-webkit-user-drag:none;user-drag:none}
+.vp .dot{width:12px;height:12px;border-radius:50%;background:var(--bd);flex:none}
+.vp.sp .dot{background:var(--ok);box-shadow:0 0 0 4px var(--okb)}
 </style>
 </head>
 <body>
@@ -278,13 +280,14 @@ const tcount=t=>Q.filter(q=>q[0]===t).length;
 function rec(id,ok){const t=Q[id][0],s=D.stats[t]||(D.stats[t]={a:0,c:0});s.a++;if(ok)s.c++;const i=D.missed.indexOf(id);if(ok){if(i>=0)D.missed.splice(i,1)}else if(i<0)D.missed.push(id);save()}
 const pool=()=>cfg.mode==='missed'?D.missed.filter(i=>Q[i]):Q.map((_,i)=>i).filter(i=>cfg.topics.has(Q[i][0]));
 const fb=()=>cfg.mode!=='exam';
+const FBCFG={apiKey:'AIzaSyAsRAV_1io4MElqdRM9TgHctbC8XRcGyj8',authDomain:'prince-learning.firebaseapp.com',projectId:'prince-learning',storageBucket:'prince-learning.firebasestorage.app',messagingSenderId:'539189965803',appId:'1:539189965803:web:911bb6f2de5cf124525fae'};
 const FB={ok:false,p:null,m:null,db:null,auth:null,uid:null,err:'',sy:0},GS={rows:null,msgs:null,err:'',un:null,tab:'all',f:{}};
 let CD='';
 const fe=e=>{const c=(e&&e.code)||'',m=c+' '+((e&&e.message)||'');return /network|unavailable|offline|fetch|import/.test(m)?'No connection to Firebase right now. Solo practice still works offline.':c==='auth/operation-not-allowed'?'Anonymous sign-in is not turned on in Firebase Authentication.':c==='auth/unauthorized-domain'?'This website address is not in the Authorized domains list in Firebase Authentication.':c==='permission-denied'?'Firestore refused the request. Check your Firestore rules and that you have joined the group.':/api-key/.test(c)?'The API key in your Firebase config is not valid.':'Firebase error: '+(c||(e&&e.message)||'unknown')};
 function fbInit(){
  if(FB.ok)return Promise.resolve(true);
  if(FB.p)return FB.p;
- const c=D.fb.cfg;
+ const c=D.fb.cfg||FBCFG;
  if(!c){FB.err='Firebase is not set up yet.';return Promise.resolve(false)}
  if(!navigator.onLine){FB.err=fe({code:'unavailable'});return Promise.resolve(false)}
  return FB.p=(async()=>{try{
@@ -364,6 +367,8 @@ function grp(){
  ${q?`<div class="card sm mu" style="margin-bottom:12px">${q} finished session${q===1?'':'s'} waiting to upload. ${FB.err?esc(FB.err)+' ':''}They send automatically when you are online.</div>`:''}
  <button class="tile" data-a="go" data-v="lb"><span class="ic">${IC.trophy}</span><span><b>Leaderboard</b><span class="mu sm">Ranked by total score and accuracy</span></span></button>
  <button class="tile" data-a="go" data-v="chat"><span class="ic">${IC.chat}</span><span><b>Group chat</b><span class="mu sm">Live messages, private to your group</span></span></button>
+ <button class="tile" data-a="go" data-v="${glive()?'gq':'gnew'}"><span class="ic">${IC.users}</span><span><b>Group quiz</b><span class="mu sm">${glive()?'A session is live. Tap to join':'Start a shared session with your group'}</span></span></button>
+ <button class="tile" data-a="go" data-v="vc"><span class="ic">${IC.phone}</span><span><b>In-app voice room</b><span class="mu sm">${VC.on?'You are in the room':vcId()?'Talk with your group inside the app':'Add your Agora App ID in Settings'}</span></span></button>
  <button class="tile" data-a="voice"><span class="ic">${IC.phone}</span><span><b>Join voice call</b><span class="mu sm">${f.voice?'Opens your saved group link':'Add a WhatsApp or Meet link in Settings'}</span></span></button>
  <button class="tile" data-a="go" data-v="gset"><span class="ic">${IC.users}</span><span><b>Group connection</b><span class="mu sm">Name, code and leaving the group</span></span></button>`;
 }
@@ -384,19 +389,15 @@ function chat(){
  <div class="foot"><div><input class="inp" id="cin" maxlength="500" autocomplete="off" enterkeyhint="send" aria-label="Message" value="${esc(CD)}"><button class="ib" data-a="send" aria-label="Send message" onpointerdown="event.preventDefault()">${IC.send}</button></div></div>`;
 }
 function gset(){
- const f=D.fb,g=f.g,ready=f.cfg&&f.name;
+ const f=D.fb,g=f.g,ready=f.name;
  return `<div class="row sp"><button class="ib" data-a="hb" data-f="settings" aria-label="Back">${IC.l}</button><span class="eb">Group connection</span><span style="width:42px"></span></div>
  <h1 style="margin:16px 0 0;font-size:28px">Connect your group</h1>
- <h3 class="sec">1. Firebase configuration</h3>
- <p class="mu sm" style="margin:0">${f.cfg?'Connected to project '+esc(f.cfg.projectId)+'. Paste a new block to replace it.':'In the Firebase console open Project settings, find Your apps, and copy the config block. Paste the whole block here.'}</p>
- <textarea class="inp" id="fcfg" aria-label="Firebase config block" autocomplete="off" autocapitalize="off" spellcheck="false">${fv('fcfg')}</textarea>
- <div class="stk"><button class="btn g" data-a="fsave">Save configuration</button></div>
- <h3 class="sec">2. Display name</h3>
+ <h3 class="sec">1. Display name</h3>
  <p class="mu sm" style="margin:0">Friends see this name on the leaderboard and in chat.</p>
  <input class="inp" id="fnm" maxlength="24" autocomplete="off" aria-label="Display name" value="${fv('fnm',f.name)}">
  <div class="stk"><button class="btn g" data-a="nsave">Save display name</button></div>
- <h3 class="sec">3. Group</h3>
- ${!ready?'<p class="mu sm">Complete steps 1 and 2 first.</p>':g?`<div class="card"><div class="eb">Your group</div><h3 style="margin:6px 0">${esc(g.name)}</h3><div class="mono" style="font-size:26px;letter-spacing:.12em;color:var(--am)">${g.code}</div><p class="mu sm" style="margin:8px 0 0">Share this code with friends. They choose Join with a code.</p></div>
+ <h3 class="sec">2. Group</h3>
+ ${!ready?'<p class="mu sm">Save your display name first.</p>':g?`<div class="card"><div class="eb">Your group</div><h3 style="margin:6px 0">${esc(g.name)}</h3><div class="mono" style="font-size:26px;letter-spacing:.12em;color:var(--am)">${g.code}</div><p class="mu sm" style="margin:8px 0 0">Share this code with friends. They choose Join with a code.</p></div>
  <div class="stk"><button class="btn g" data-a="copy">Copy group code</button><button class="btn g danger" data-a="gask">Leave group</button></div>`:`<label class="mu sm" for="fgn">Create a new group. Choose a group name.</label>
  <input class="inp" id="fgn" maxlength="40" autocomplete="off" value="${fv('fgn')}">
  <div class="stk"><button class="btn" data-a="gcreate">Create group</button></div>
@@ -408,8 +409,12 @@ const settingsMore=()=>`<h3 class="sec">Voice call link</h3>
  <p class="mu sm" style="margin:0">Paste a WhatsApp group link or a Google Meet link. The Join voice call button in the Group tab opens it.</p>
  <input class="inp" id="fvo" inputmode="url" autocomplete="off" autocapitalize="off" aria-label="Voice call link" value="${esc(D.fb.voice||'')}">
  <div class="stk"><button class="btn g" data-a="vsave">Save voice link</button></div>
+ ${AGORA_ID?'':`<h3 class="sec">Voice room App ID</h3>
+ <p class="mu sm" style="margin:0">Paste the Agora App ID to turn on the in-app voice room.</p>
+ <input class="inp" id="fag" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Agora App ID" value="${esc(D.fb.agora||'')}">
+ <div class="stk"><button class="btn g" data-a="agsave">Save App ID</button></div>`}
  <h3 class="sec">Group and leaderboard</h3>
- <button class="tile" data-a="go" data-v="gset"><span class="ic">${IC.users}</span><span><b>Group connection</b><span class="mu sm">${D.fb.g?esc(D.fb.g.name)+', code '+D.fb.g.code:'Firebase, display name and group code'}</span></span></button>`;
+ <button class="tile" data-a="go" data-v="gset"><span class="ic">${IC.users}</span><span><b>Group connection</b><span class="mu sm">${D.fb.g?esc(D.fb.g.name)+', code '+D.fb.g.code:'Display name and group code'}</span></span></button>`;
 const mkCode=()=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=crypto.getRandomValues(new Uint8Array(6));return Array.from(r,x=>A[x%A.length]).join('')};
 async function enter(code,nm){
  const M=FB.m,r=M.doc(FB.db,'groups',code,'members',FB.uid),s=await M.getDoc(r);
@@ -569,6 +574,196 @@ document.addEventListener('click',e=>{
  else if(a==='wleave'){wsave();wstop();if(HD>0)history.back();else go('home',{replace:true})}
 });
 
+const GR={room:null,ans:{},my:{},off:0,k:'',tk:null,err:''};
+const gcfg={n:10,qs:30,brk:10,lead:2,topics:new Set(T.map((_,i)=>i))};
+const xm=s=>{let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}return()=>{h=Math.imul(h^h>>>16,2246822507);h=Math.imul(h^h>>>13,3266489909);return(h^=h>>>16)>>>0}};
+const gperm=(id,i)=>{const r=xm(id+':'+i),p=[0,1,2,3];for(let k=3;k>0;k--){const j=r()%(k+1);[p[k],p[j]]=[p[j],p[k]]}return p};
+const gopts=(id,i)=>{const p=gperm(GR.room.id,i),q=Q[GR.room.q[i]];return{o:p.map(x=>q[2+x]),c:p.indexOf(0),q}};
+const gpool=()=>Q.map((_,i)=>i).filter(i=>gcfg.topics.has(Q[i][0]));
+const gnow=()=>Date.now()+GR.off;
+const glive=()=>GR.room&&GR.room.endAt>gnow();
+function gstate(){
+ const r=GR.room;if(!r)return null;const t=gnow(),b=(r.qs+r.brk)*1000;
+ if(t<r.startAt)return{ph:'lobby',i:0,left:r.startAt-t};
+ if(t>=r.endAt)return{ph:'done',i:r.q.length-1,left:0};
+ const e=t-r.startAt,i=Math.floor(e/b),x=e%b;
+ return x<r.qs*1000?{ph:'ask',i,left:r.qs*1000-x}:{ph:'brk',i,left:b-x};
+}
+async function clockSync(){
+ if(!FB.ok||!D.fb.g)return;
+ const M=FB.m,r=M.doc(FB.db,'groups',D.fb.g.code,'members',FB.uid);let best=null;
+ for(let k=0;k<3;k++){try{
+  const t0=Date.now();await M.updateDoc(r,{last:M.serverTimestamp()});
+  const s=await M.getDocFromServer(r),t1=Date.now(),rt=t1-t0;
+  if(!best||rt<best.rt)best={rt,off:s.data().last.toMillis()-(t0+rt/2)};
+ }catch(e){break}}
+ if(best)GR.off=Math.round(best.off);
+}
+function gstop(){
+ if(GS.ru){GS.ru();GS.ru=null}if(GS.au){GS.au();GS.au=null}
+ clearInterval(GR.tk);GR.tk=null;GR.room=null;GR.ans={};GR.my={};GR.k='';
+}
+async function roomStart(){
+ if(GS.ru||!D.fb.g)return;GS.ru=()=>{};
+ if(!await fbInit()){GS.ru=null;return}
+ const M=FB.m;
+ GS.ru=M.onSnapshot(M.query(M.collection(FB.db,'groups',D.fb.g.code,'rooms'),M.orderBy('startAt','desc'),M.limit(1)),s=>{
+  const d=s.docs[0],old=GR.room&&GR.room.id;let r=d?{id:d.id,...d.data()}:null;
+  if(r&&r.endAt<gnow()-600000)r=null;
+  GR.room=r;GR.k='';
+  if((r&&r.id)!==old){GR.my={};GR.ans={};if(GS.au){GS.au();GS.au=null}if(r)ansStart(r.id)}
+  if(V==='gq'||V==='grp')render();
+ },e=>{GR.err=fe(e)});
+}
+function ansStart(id){
+ const M=FB.m;
+ GS.au=M.onSnapshot(M.collection(FB.db,'groups',D.fb.g.code,'rooms',id,'answers'),s=>{
+  GR.ans={};s.docs.forEach(d=>{GR.ans[d.id]=d.data()});
+  const me=GR.ans[FB.uid];if(me&&me.a)Object.keys(me.a).forEach(k=>{if(GR.my[k]===undefined)GR.my[k]=me.a[k]});
+  if(V==='gq'){const s2=gstate();if(s2&&s2.ph==='ask'){const e=$('#gc');if(e)e.textContent=gcount(s2.i)}else render()}
+ },e=>{GR.err=fe(e)});
+}
+const gcount=i=>`${Object.values(GR.ans).filter(x=>x.a&&x.a[i]!==undefined).length} of ${Object.keys(GR.ans).length} answered`;
+async function gEnter(){
+ clearInterval(GR.tk);GR.tk=setInterval(gtick,250);GR.k='';
+ try{navigator.wakeLock&&navigator.wakeLock.request('screen').catch(()=>{})}catch(e){}
+ if(await fbInit()){
+  await clockSync();GR.k='';
+  const s=gstate();
+  if(s&&s.ph==='lobby'&&!GR.ans[FB.uid]){try{await FB.m.setDoc(FB.m.doc(FB.db,'groups',D.fb.g.code,'rooms',GR.room.id,'answers',FB.uid),{name:D.fb.name,a:{}})}catch(e){}}
+  if(V==='gq')render();
+ }
+}
+function gtick(){
+ if(V!=='gq')return;const s=gstate();if(!s)return;const k=s.ph+s.i;
+ if(k!==GR.k){GR.k=k;render();scrollTo(0,0);if(s.ph==='done')grec();if(s.ph==='brk')gflush()}
+ else{const e=$('#gt');if(e)e.textContent=fmt(Math.ceil(s.left/1000))}
+}
+async function gflush(){
+ if(!GR.room||!Object.keys(GR.my).length||!await fbInit())return;
+ try{await FB.m.setDoc(FB.m.doc(FB.db,'groups',D.fb.g.code,'rooms',GR.room.id,'answers',FB.uid),{name:D.fb.name,a:GR.my},{merge:true})}catch(e){GR.err=fe(e)}
+}
+function grec(){
+ const r=GR.room;if(!r)return;D.fb.gdone=D.fb.gdone||[];
+ const ks=Object.keys(GR.my);if(!ks.length||D.fb.gdone.includes(r.id))return;
+ const c=ks.filter(i=>GR.my[i]===gopts(r.id,+i).c).length;
+ D.fb.gdone.push(r.id);D.fb.gdone=D.fb.gdone.slice(-20);save();
+ qSession({d:r.startAt,m:'group',n:r.q.length,c,a:ks.length,t:r.qs*r.q.length});gflush();
+}
+async function gpick(k){
+ const s=gstate();if(!s||s.ph!=='ask'||GR.my[s.i]!==undefined)return;
+ GR.my[s.i]=k;const y=scrollY;render();scrollTo(0,y);gflush();
+}
+function gnew(){
+ const p=gpool().length,ns=[5,10,15,20].filter(n=>n<=p),live=glive();
+ const sg=(a,vals,cur,fn)=>`<div class="seg">${vals.map(v=>`<button class="${cur===v?'on':''}" data-a="${a}" data-n="${v}">${fn(v)}</button>`).join('')}</div>`;
+ return `<div class="row sp"><button class="ib" data-a="hb" data-f="grp" aria-label="Back">${IC.l}</button><span class="eb">New group session</span><span style="width:42px"></span></div>
+ <h1 style="margin:16px 0 4px;font-size:28px">Start a group session</h1>
+ <p class="mu sm" style="margin:0">Everyone gets the same questions at the same moment. The timer moves the group on automatically, so nobody waits for a slow connection.</p>
+ ${live?`<div class="card" style="margin-top:14px"><b>A session is already running.</b><p class="mu sm" style="margin:6px 0 0">Wait for it to finish, or join it.</p><div class="stk"><button class="btn" data-a="go" data-v="gq">Open live session</button></div></div>`:''}
+ <div class="row sp sec"><h3>Topics</h3><span class="sm"><button data-a="gall" style="color:var(--am)">Select all</button> <span class="mu">/</span> <button data-a="gnone" style="color:var(--am)">Clear</button></span></div>
+ <div class="chips">${T.map((n,i)=>`<button class="chip ${gcfg.topics.has(i)?'on':''}" data-a="gtgl" data-t="${i}">${n} (${Q.filter(q=>q[0]===i).length})</button>`).join('')}</div>
+ <h3 class="sec">Questions</h3>${sg('gn',ns,Math.min(gcfg.n,ns[ns.length-1]||0),v=>v)}
+ <h3 class="sec">Seconds per question</h3>${sg('gqs',[20,30,45,60],gcfg.qs,v=>v)}
+ <h3 class="sec">Break between questions</h3>${sg('gbrk',[5,10,15],gcfg.brk,v=>v+' s')}
+ <h3 class="sec">Starts in</h3>${sg('glead',[1,2,5],gcfg.lead,v=>v+' min')}
+ <div class="stk"><button class="btn ${p>=3&&!live?'':'off'}" data-a="gstart">Start session</button></div>`;
+}
+function gq(){
+ const r=GR.room,bk=`<div class="row sp"><button class="ib" data-a="hb" data-f="grp" aria-label="Back">${IC.l}</button><span class="eb">Group quiz</span><span style="width:42px"></span></div>`;
+ if(!r)return bk+`<h1 style="margin:16px 0 6px;font-size:28px">No live session</h1><p class="mu">Nothing is running right now. Start one and your friends will see it on their Group screen.</p><div class="stk"><button class="btn" data-a="go" data-v="gnew">Start a session</button></div>`;
+ if(r.qn!==Q.length)return bk+`<h1 style="margin:16px 0 6px;font-size:28px">Update needed</h1><p class="mu">This session uses a newer version of the app. Close the app, reopen the link and try again.</p>`;
+ const s=gstate(),n=r.q.length,names=Object.values(GR.ans).map(x=>esc(x.name||'')).join(', ');
+ if(s.ph==='lobby')return bk+`<h1 style="margin:16px 0 4px;font-size:28px">Session starts in</h1>
+  <div class="mono" id="gt" style="font-size:52px;color:var(--am);margin:6px 0 12px">${fmt(Math.ceil(s.left/1000))}</div>
+  <p class="mu">${n} questions, ${r.qs} seconds each, ${r.brk} second breaks. Started by ${esc(r.hn||'')}. Keep this screen open until it begins.</p>
+  <div class="card"><div class="eb">Joined (${Object.keys(GR.ans).length})</div><div style="margin-top:6px">${names||'Waiting for people to join'}</div></div>
+  ${r.host===FB.uid?'<div class="stk"><button class="btn g danger" data-a="gcancel">Cancel session</button></div>':''}`;
+ if(s.ph==='done')return gdone(bk,r);
+ const o=gopts(r.id,s.i),my=GR.my[s.i],L='ABCD';
+ const head=`<div class="top"><div><div class="eb">Question ${s.i+1} of ${n}</div><div class="mono sm mu">${esc(T[o.q[0]])}</div></div><div class="tm ${s.ph==='ask'&&s.left<6000?'low':''}" id="gt">${fmt(Math.ceil(s.left/1000))}</div></div><div class="pg"><i style="width:${(s.i+(s.ph==='brk'?1:0))/n*100}%"></i></div><div class="q">${esc(o.q[1])}</div>`;
+ if(s.ph==='ask')return head+o.o.map((t,j)=>`<button class="opt ${my===j?'sel':my!==undefined?'dim':''}" data-a="gpick" data-k="${j}"><span class="k">${L[j]}</span><span>${esc(t)}</span></button>`).join('')+`<p class="mu sm" id="gc" style="margin-top:12px">${gcount(s.i)}</p>${my!==undefined?'<p class="sm" style="color:var(--am);margin:4px 0 0">Answer locked in. The group moves on when the timer ends.</p>':''}`;
+ const cnt=[0,0,0,0];Object.values(GR.ans).forEach(x=>{if(x.a&&x.a[s.i]!==undefined)cnt[x.a[s.i]]++});
+ return head+o.o.map((t,j)=>`<div class="opt ${j===o.c?'ok':my===j?'bad':'dim'}"><span class="k">${L[j]}</span><span style="flex:1">${esc(t)}</span><span class="mono sm">${cnt[j]}</span></div>`).join('')+`<div class="card" style="margin-top:6px"><div class="eb">${my===undefined?'No answer from you':my===o.c?'You were right':'You chose '+L[my]}</div><p style="margin:6px 0 0">${esc(o.q[6]||'')}</p></div><p class="mu sm" style="margin-top:12px">${s.i===n-1?'Results in':'Next question in'} <span class="mono" id="gt2"></span></p>`;
+}
+function gdone(bk,r){
+ const n=r.q.length,rows=Object.entries(GR.ans).map(([u,x])=>{const a=x.a||{};return{u,name:x.name,c:Object.keys(a).filter(i=>a[i]===gopts(r.id,+i).c).length,a:Object.keys(a).length}}).sort((a,b)=>b.c-a.c||b.a-a.a);
+ const miss=r.q.map((id,i)=>{const o=gopts(r.id,i),t=rows.filter(x=>(GR.ans[x.u].a||{})[i]!==undefined).length,c=rows.filter(x=>(GR.ans[x.u].a||{})[i]===o.c).length;return{i,t,c,o}}).filter(m=>m.t&&m.c<m.t).sort((a,b)=>a.c/a.t-b.c/b.t).slice(0,3);
+ return bk+`<div class="eb" style="margin-top:14px">Session complete</div><h1 style="margin:6px 0 12px;font-size:28px">Group results</h1>
+ ${rows.map((x,i)=>`<div class="lbr ${x.u===FB.uid?'me':''}"><span class="rk">${i+1}</span><div style="flex:1;min-width:0"><b style="font-weight:500">${esc(x.name||'')}</b><div class="mu sm">${x.a} of ${n} answered</div></div><div class="mono"><b style="font-weight:500">${x.c}/${n}</b></div></div>`).join('')||'<p class="mu">No answers were recorded.</p>'}
+ ${miss.length?`<h3 class="sec">Worth discussing as a group</h3>${miss.map(m=>`<div class="card" style="margin-bottom:10px"><div class="mono sm mu">${m.c} of ${m.t} got it right</div><p style="margin:6px 0">${esc(m.o.q[1])}</p><p class="sm" style="margin:0;color:var(--am)">${esc(m.o.o[m.o.c])}</p></div>`).join('')}`:''}
+ <div class="stk"><button class="btn" data-a="go" data-v="chat">Open group chat</button><button class="btn g" data-a="go" data-v="grp">Back to group</button></div>`;
+}
+document.addEventListener('click',async e=>{
+ const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a,d=el.dataset;
+ if(a==='gpick')gpick(+d.k);
+ else if(a==='gtgl'){const t=+d.t;gcfg.topics.has(t)?gcfg.topics.delete(t):gcfg.topics.add(t);render()}
+ else if(a==='gall'){gcfg.topics=new Set(T.map((_,i)=>i));render()}
+ else if(a==='gnone'){gcfg.topics=new Set();render()}
+ else if(a==='gn'){gcfg.n=+d.n;render()}
+ else if(a==='gqs'){gcfg.qs=+d.n;render()}
+ else if(a==='gbrk'){gcfg.brk=+d.n;render()}
+ else if(a==='glead'){gcfg.lead=+d.n;render()}
+ else if(a==='gstart'){
+  const p=gpool();if(p.length<3||glive())return;
+  if(!await fbInit()){ovm('Could not connect',FB.err);return}
+  await clockSync();const M=FB.m,ids=shuf(p).slice(0,Math.min(gcfg.n,p.length)),b=(gcfg.qs+gcfg.brk)*1000,st=gnow()+gcfg.lead*60000;
+  try{await M.addDoc(M.collection(FB.db,'groups',D.fb.g.code,'rooms'),{host:FB.uid,hn:D.fb.name,qn:Q.length,q:ids,qs:gcfg.qs,brk:gcfg.brk,startAt:st,endAt:st+ids.length*b,created:M.serverTimestamp()});go('gq',{replace:true})}catch(x){ovm('Could not start session',fe(x))}}
+ else if(a==='gcancel'){try{await FB.m.deleteDoc(FB.m.doc(FB.db,'groups',D.fb.g.code,'rooms',GR.room.id))}catch(x){ovm('Could not cancel',fe(x))}}
+});
+addEventListener('online',()=>gflush());
+setInterval(()=>{const e=$('#gt2'),s=gstate();if(e&&s)e.textContent=fmt(Math.ceil(s.left/1000))},250);
+
+const AGORA_ID='9aa99a24bd0d415997fa5c72066993bb';
+const VC={cl:null,tr:null,on:false,busy:false,muted:false,err:'',users:{},me:''};
+const vcId=()=>AGORA_ID||D.fb.agora||'';
+const vcName=u=>String(u).split('~')[0]||'Member';
+const vcErr=e=>{const m=(e&&(e.code||e.name||''))+' '+((e&&e.message)||'');return /PERMISSION|NotAllowed|DEVICES_NOT_FOUND|NotFound/.test(m)?'Microphone access was blocked or not found. Allow the microphone for this site in your browser settings, then try again.':/VENDOR_KEY|APP_ID|INVALID_APP|DYNAMIC_KEY/.test(m)?'Agora refused the App ID. Check it in Settings.':/NETWORK|WS_ABORT|GATEWAY|Could not load|fetch/i.test(m)?'No connection to the voice service right now.':'Voice error: '+(((e&&e.code)||(e&&e.message))||'unknown')};
+const vcLoad=()=>window.AgoraRTC?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://download.agora.io/sdk/release/AgoraRTC_N-4.22.2.js';s.onload=ok;s.onerror=()=>no(new Error('Could not load the voice engine'));document.head.appendChild(s)});
+async function vcClean(){
+ try{if(VC.tr){VC.tr.stop();VC.tr.close()}}catch(e){}
+ try{if(VC.cl)await VC.cl.leave()}catch(e){}
+ VC.cl=null;VC.tr=null;VC.on=false;VC.users={};VC.muted=false;
+}
+async function vcJoin(){
+ if(VC.on||VC.busy)return;
+ if(!vcId()){VC.err='Add your Agora App ID in Settings first.';render();return}
+ VC.busy=true;VC.err='';render();
+ try{
+  await vcLoad();AgoraRTC.setLogLevel(3);
+  const cl=AgoraRTC.createClient({mode:'rtc',codec:'vp8'});VC.cl=cl;
+  VC.me=(D.fb.name||'Member').replace(/[^A-Za-z0-9 ]/g,'').trim().slice(0,16)+'~'+Math.random().toString(36).slice(2,6);
+  cl.on('user-published',async(u,t)=>{try{await cl.subscribe(u,t);if(t==='audio')u.audioTrack.play()}catch(e){}});
+  cl.on('user-joined',u=>{VC.users[u.uid]=1;if(V==='vc')render()});
+  cl.on('user-left',u=>{delete VC.users[u.uid];if(V==='vc')render()});
+  cl.on('volume-indicator',vs=>{const sp=new Set(vs.filter(v=>v.level>5).map(v=>String(v.uid)==='0'?VC.me:String(v.uid)));document.querySelectorAll('[data-vu]').forEach(el=>el.classList.toggle('sp',sp.has(el.dataset.vu)))});
+  cl.enableAudioVolumeIndicator();
+  await cl.join(vcId(),'mcb201-'+D.fb.g.code,null,VC.me);
+  VC.tr=await AgoraRTC.createMicrophoneAudioTrack();
+  await cl.publish([VC.tr]);
+  cl.remoteUsers.forEach(u=>{VC.users[u.uid]=1});
+  VC.on=true;
+ }catch(e){await vcClean();VC.err=vcErr(e)}
+ VC.busy=false;if(V==='vc'||V==='grp')render();
+}
+function vc(){
+ const ids=VC.on?[VC.me].concat(Object.keys(VC.users)):[];
+ return `<div class="row sp"><button class="ib" data-a="hb" data-f="grp" aria-label="Back">${IC.l}</button><span class="eb">Voice room</span><span style="width:42px"></span></div>
+ <h1 style="margin:16px 0 4px;font-size:28px">${esc(D.fb.g.name)}</h1>
+ <p class="mu sm" style="margin:0 0 14px">Everyone in your group who joins here is in the same room. Use headphones to avoid echo. The room closes for you if you close the app.</p>
+ ${VC.err?`<div class="fb bad"><b>Could not join</b><p>${esc(VC.err)}</p></div>`:''}
+ ${VC.on?`<div class="eb" style="margin:6px 0">In the room (${ids.length})</div>${ids.map(id=>`<div class="lbr vp" data-vu="${esc(id)}"><span class="dot"></span><div style="flex:1;min-width:0"><b style="font-weight:500">${esc(vcName(id))}${id===VC.me?' (you)':''}</b></div></div>`).join('')}
+ <div class="stk"><button class="btn" data-a="vcmute">${VC.muted?'Unmute microphone':'Mute microphone'}</button><button class="btn g danger" data-a="vcleave">Leave voice room</button></div>`
+ :`<div class="stk"><button class="btn ${VC.busy?'off':''}" data-a="vcjoin">${VC.busy?'Connecting':'Join voice room'}</button></div>`}`;
+}
+document.addEventListener('click',async e=>{
+ const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a;
+ if(a==='vcjoin')vcJoin();
+ else if(a==='vcmute'&&VC.tr){VC.muted=!VC.muted;try{await VC.tr.setMuted(VC.muted)}catch(x){}render()}
+ else if(a==='vcleave'){await vcClean();render()}
+ else if(a==='agsave'){const v=($('#fag').value||'').trim();if(v&&!/^[0-9a-fA-F]{32}$/.test(v)){ovm('App ID not recognised','An Agora App ID is 32 letters and numbers. Copy it again from the Agora console.');return}D.fb.agora=v;save();ovm(v?'App ID saved':'App ID removed',v?'The Voice room tile in the Group tab is now ready.':'The in-app voice room is off.')}
+});
+
 function home(){
  const t=tally(),m=D.missed.length;
  return `${topbar('MCB 201',`<button class="ib" data-a="theme" aria-label="Toggle brightness">${theme()==='light'?IC.moon:IC.sun}</button>`)}
@@ -690,17 +885,19 @@ function ovl(){
 }
 function render(){
  applyTheme();
- app.innerHTML=({home,setup,sess,res,rev,prog,notes,note,settings,grp,lb,chat,gset,wset,wsess,wres})[V]()+(OV?ovl():'');
+ app.innerHTML=({home,setup,sess,res,rev,prog,notes,note,settings,grp,lb,chat,gset,wset,wsess,wres,gnew,gq,vc})[V]()+(OV?ovl():'');
  const show=['home','setup','prog','notes','grp'].includes(V);
  nav.style.display=show?'flex':'none';
  if(show)nav.innerHTML=[['home','home','Home'],['setup','prac','Practice'],['notes','book','Notes'],['prog','chart','Progress'],['grp','users','Group']].map(([v,i,l])=>`<button class="${V===v&&(v!=='setup'||cfg.mode==='practice')?'on':''}" data-a="nav" data-v="${v}">${IC[i]}<span>${l}</span></button>`).join('');
 }
 function go(v,o={}){
- if((v==='lb'||v==='chat')&&!D.fb.g)v='grp';
+ if(['lb','chat','gq','gnew','vc'].includes(v)&&!D.fb.g)v='grp';
  if(v!==V)stopLive();if(V==='wsess'&&v!=='wsess'){wsave();wstop()}V=v;OV=null;G=false;
  if(!o.pop){if(o.replace)history.replaceState({v,n:HD},'');else{HD++;history.pushState({v,n:HD},'')}}
  render();scrollTo(0,0);
  if(v==='lb')lbStart();if(v==='chat')chatStart();
+ if(['grp','gq','gnew'].includes(v))roomStart();else gstop();
+ if(v==='gq')gEnter();
 }
 function stop(){clearInterval(tid);tid=null}
 function saveRun(){D.run={mode:cfg.mode,i:R.i,el:R.el,lim:R.lim,items:R.items};save()}
