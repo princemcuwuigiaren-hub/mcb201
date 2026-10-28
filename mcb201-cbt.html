@@ -368,7 +368,7 @@ function grp(){
  <button class="tile" data-a="go" data-v="lb"><span class="ic">${IC.trophy}</span><span><b>Leaderboard</b><span class="mu sm">Ranked by total score and accuracy</span></span></button>
  <button class="tile" data-a="go" data-v="chat"><span class="ic">${IC.chat}</span><span><b>Group chat</b><span class="mu sm">Live messages, private to your group</span></span></button>
  <button class="tile" data-a="go" data-v="${glive()?'gq':'gnew'}"><span class="ic">${IC.users}</span><span><b>Group quiz</b><span class="mu sm">${glive()?'A session is live. Tap to join':'Start a shared session with your group'}</span></span></button>
- <button class="tile" data-a="go" data-v="vc"><span class="ic">${IC.phone}</span><span><b>In-app voice room</b><span class="mu sm">${VC.on?'You are in the room':vcId()?'Talk with your group inside the app':'Add your Agora App ID in Settings'}</span></span></button>
+ <button class="tile" data-a="go" data-v="vc"><span class="ic">${IC.phone}</span><span><b>In-app voice room</b><span class="mu sm">${VC.on?'You are in the room':vcId()?'Talk with your group inside the app':'Add your Daily room link in Settings'}</span></span></button>
  <button class="tile" data-a="voice"><span class="ic">${IC.phone}</span><span><b>Join voice call</b><span class="mu sm">${f.voice?'Opens your saved group link':'Add a WhatsApp or Meet link in Settings'}</span></span></button>
  <button class="tile" data-a="go" data-v="gset"><span class="ic">${IC.users}</span><span><b>Group connection</b><span class="mu sm">Name, code and leaving the group</span></span></button>`;
 }
@@ -409,10 +409,10 @@ const settingsMore=()=>`<h3 class="sec">Voice call link</h3>
  <p class="mu sm" style="margin:0">Paste a WhatsApp group link or a Google Meet link. The Join voice call button in the Group tab opens it.</p>
  <input class="inp" id="fvo" inputmode="url" autocomplete="off" autocapitalize="off" aria-label="Voice call link" value="${esc(D.fb.voice||'')}">
  <div class="stk"><button class="btn g" data-a="vsave">Save voice link</button></div>
- ${AGORA_ID?'':`<h3 class="sec">Voice room App ID</h3>
- <p class="mu sm" style="margin:0">Paste the Agora App ID to turn on the in-app voice room.</p>
- <input class="inp" id="fag" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Agora App ID" value="${esc(D.fb.agora||'')}">
- <div class="stk"><button class="btn g" data-a="agsave">Save App ID</button></div>`}
+  ${DAILY_URL?'':` <h3 class="sec">Voice room link</h3>
+ <p class="mu sm" style="margin:0">Paste the Daily room link to turn on the in-app voice room.</p>
+ <input class="inp" id="fdl" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Voice room link" value="${esc(D.fb.daily||'')}">
+ <div class="stk"><button class="btn g" data-a="dsave">Save room link</button></div>`}
  <h3 class="sec">Group and leaderboard</h3>
  <button class="tile" data-a="go" data-v="gset"><span class="ic">${IC.users}</span><span><b>Group connection</b><span class="mu sm">${D.fb.g?esc(D.fb.g.name)+', code '+D.fb.g.code:'Display name and group code'}</span></span></button>`;
 const mkCode=()=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=crypto.getRandomValues(new Uint8Array(6));return Array.from(r,x=>A[x%A.length]).join('')};
@@ -714,59 +714,20 @@ document.addEventListener('click',async e=>{
 addEventListener('online',()=>gflush());
 setInterval(()=>{const e=$('#gt2'),s=gstate();if(e&&s)e.textContent=fmt(Math.ceil(s.left/1000))},250);
 
-const AGORA_ID='9aa99a24bd0d415997fa5c72066993bb';
-const VC={cl:null,tr:null,on:false,busy:false,muted:false,err:'',users:{},me:''};
-const vcId=()=>AGORA_ID||D.fb.agora||'';
-const vcName=u=>String(u).split('~')[0]||'Member';
-const vcErr=e=>{const c=(e&&(e.code||e.name))||'',t=((e&&e.message)||'').slice(0,140),m=c+' '+t,d=' Details: '+(c+' '+t).trim();
- if(/Could not load the voice engine/.test(m))return 'The voice engine could not be downloaded. Check your connection.'+d;
- if(/PERMISSION|NotAllowed|DEVICES_NOT_FOUND|NotFound/.test(m))return 'Microphone access was blocked or not found. Allow the microphone for this site in your browser settings, then try again.'+d;
- if(/vendor key|VENDOR_KEY|APP_ID|INVALID_APP|DYNAMIC_KEY|dynamic use static|token/i.test(m))return 'Agora refused the connection. The App ID may be wrong, or the Agora project may require tokens. Use a project that is set to App ID only.'+d;
- if(/NETWORK|WS_ABORT|GATEWAY|fetch/i.test(m))return 'No connection to the voice service right now.'+d;
- return 'Voice error.'+d};
-const vcLoad=()=>window.AgoraRTC?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://download.agora.io/sdk/release/AgoraRTC_N-4.22.2.js';s.onload=ok;s.onerror=()=>no(new Error('Could not load the voice engine'));document.head.appendChild(s)});
-async function vcClean(){
- try{if(VC.tr){VC.tr.stop();VC.tr.close()}}catch(e){}
- try{if(VC.cl)await VC.cl.leave()}catch(e){}
- VC.cl=null;VC.tr=null;VC.on=false;VC.users={};VC.muted=false;
-}
-async function vcJoin(){
- if(VC.on||VC.busy)return;
- if(!vcId()){VC.err='Add your Agora App ID in Settings first.';render();return}
- VC.busy=true;VC.err='';render();
- try{
-  await vcLoad();AgoraRTC.setLogLevel(3);
-  const cl=AgoraRTC.createClient({mode:'rtc',codec:'vp8'});VC.cl=cl;
-  VC.me=(D.fb.name||'Member').replace(/[^A-Za-z0-9 ]/g,'').trim().slice(0,16)+'~'+Math.random().toString(36).slice(2,6);
-  cl.on('user-published',async(u,t)=>{try{await cl.subscribe(u,t);if(t==='audio')u.audioTrack.play()}catch(e){}});
-  cl.on('user-joined',u=>{VC.users[u.uid]=1;if(V==='vc')render()});
-  cl.on('user-left',u=>{delete VC.users[u.uid];if(V==='vc')render()});
-  cl.on('volume-indicator',vs=>{const sp=new Set(vs.filter(v=>v.level>5).map(v=>String(v.uid)==='0'?VC.me:String(v.uid)));document.querySelectorAll('[data-vu]').forEach(el=>el.classList.toggle('sp',sp.has(el.dataset.vu)))});
-  cl.enableAudioVolumeIndicator();
-  await cl.join(vcId(),'mcb201-'+D.fb.g.code,null,VC.me);
-  VC.tr=await AgoraRTC.createMicrophoneAudioTrack();
-  await cl.publish([VC.tr]);
-  cl.remoteUsers.forEach(u=>{VC.users[u.uid]=1});
-  VC.on=true;
- }catch(e){await vcClean();VC.err=vcErr(e)}
- VC.busy=false;if(V==='vc'||V==='grp')render();
-}
+const DAILY_URL='https://princemcuwuigiaren.daily.co/mcb201-study';
+const VC={on:false};
+const vcId=()=>DAILY_URL||D.fb.daily||'';
 function vc(){
- const ids=VC.on?[VC.me].concat(Object.keys(VC.users)):[];
- return `<div class="row sp"><button class="ib" data-a="hb" data-f="grp" aria-label="Back">${IC.l}</button><span class="eb">Voice room</span><span style="width:42px"></span></div>
- <h1 style="margin:16px 0 4px;font-size:28px">${esc(D.fb.g.name)}</h1>
- <p class="mu sm" style="margin:0 0 14px">Everyone in your group who joins here is in the same room. Use headphones to avoid echo. The room closes for you if you close the app.</p>
- ${VC.err?`<div class="fb bad"><b>Could not join</b><p>${esc(VC.err)}</p></div>`:''}
- ${VC.on?`<div class="eb" style="margin:6px 0">In the room (${ids.length})</div>${ids.map(id=>`<div class="lbr vp" data-vu="${esc(id)}"><span class="dot"></span><div style="flex:1;min-width:0"><b style="font-weight:500">${esc(vcName(id))}${id===VC.me?' (you)':''}</b></div></div>`).join('')}
- <div class="stk"><button class="btn" data-a="vcmute">${VC.muted?'Unmute microphone':'Mute microphone'}</button><button class="btn g danger" data-a="vcleave">Leave voice room</button></div>`
- :`<div class="stk"><button class="btn ${VC.busy?'off':''}" data-a="vcjoin">${VC.busy?'Connecting':'Join voice room'}</button></div>`}`;
+ const u=vcId(),bk=`<div class="row sp"><button class="ib" data-a="hb" data-f="grp" aria-label="Back">${IC.l}</button><span class="eb">Voice room</span><span style="width:42px"></span></div><h1 style="margin:16px 0 4px;font-size:28px">${esc(D.fb.g.name)}</h1>`;
+ if(!u)return bk+`<p class="mu">The voice room needs a room link. Add it in Settings under Voice room link.</p><div class="stk"><button class="btn" data-a="go" data-v="settings">Open Settings</button></div>`;
+ if(!VC.on)return bk+`<p class="mu sm" style="margin:0 0 14px">Everyone who joins here is in the same room. Allow the microphone when asked, and turn your camera off. Use headphones to avoid echo. Leaving this screen ends your call.</p><div class="stk"><button class="btn" data-a="vcjoin">Join voice room</button></div>`;
+ return bk+`<iframe title="Voice room" src="${esc(u)}" allow="microphone; camera; autoplay; display-capture; fullscreen" style="width:100%;height:68vh;border:0;border-radius:14px;margin-top:12px;background:var(--s1)"></iframe><div class="stk"><button class="btn g danger" data-a="vcleave">Leave voice room</button></div>`;
 }
-document.addEventListener('click',async e=>{
+document.addEventListener('click',e=>{
  const el=e.target.closest('[data-a]');if(!el)return;const a=el.dataset.a;
- if(a==='vcjoin')vcJoin();
- else if(a==='vcmute'&&VC.tr){VC.muted=!VC.muted;try{await VC.tr.setMuted(VC.muted)}catch(x){}render()}
- else if(a==='vcleave'){await vcClean();render()}
- else if(a==='agsave'){const v=($('#fag').value||'').trim();if(v&&!/^[0-9a-fA-F]{32}$/.test(v)){ovm('App ID not recognised','An Agora App ID is 32 letters and numbers. Copy it again from the Agora console.');return}D.fb.agora=v;save();ovm(v?'App ID saved':'App ID removed',v?'The Voice room tile in the Group tab is now ready.':'The in-app voice room is off.')}
+ if(a==='vcjoin'){VC.on=true;render()}
+ else if(a==='vcleave'){VC.on=false;render()}
+ else if(a==='dsave'){const v=($('#fdl').value||'').trim();if(v&&!/^https:\/\/[A-Za-z0-9-]+\.daily\.co\/[A-Za-z0-9_-]+$/.test(v)){ovm('Link not recognised','A Daily room link looks like https://your-name.daily.co/room-name');return}D.fb.daily=v;save();ovm(v?'Room link saved':'Room link removed',v?'The Voice room tile in the Group tab is now ready.':'The in-app voice room is off.')}
 });
 
 function home(){
@@ -897,7 +858,7 @@ function render(){
 }
 function go(v,o={}){
  if(['lb','chat','gq','gnew','vc'].includes(v)&&!D.fb.g)v='grp';
- if(v!==V)stopLive();if(V==='wsess'&&v!=='wsess'){wsave();wstop()}V=v;OV=null;G=false;
+ if(v!==V)stopLive();if(v!=='vc')VC.on=false;if(V==='wsess'&&v!=='wsess'){wsave();wstop()}V=v;OV=null;G=false;
  if(!o.pop){if(o.replace)history.replaceState({v,n:HD},'');else{HD++;history.pushState({v,n:HD},'')}}
  render();scrollTo(0,0);
  if(v==='lb')lbStart();if(v==='chat')chatStart();
