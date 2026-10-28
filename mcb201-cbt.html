@@ -718,7 +718,12 @@ const AGORA_ID='9aa99a24bd0d415997fa5c72066993bb';
 const VC={cl:null,tr:null,on:false,busy:false,muted:false,err:'',users:{},me:''};
 const vcId=()=>AGORA_ID||D.fb.agora||'';
 const vcName=u=>String(u).split('~')[0]||'Member';
-const vcErr=e=>{const m=(e&&(e.code||e.name||''))+' '+((e&&e.message)||'');return /PERMISSION|NotAllowed|DEVICES_NOT_FOUND|NotFound/.test(m)?'Microphone access was blocked or not found. Allow the microphone for this site in your browser settings, then try again.':/VENDOR_KEY|APP_ID|INVALID_APP|DYNAMIC_KEY/.test(m)?'Agora refused the App ID. Check it in Settings.':/NETWORK|WS_ABORT|GATEWAY|Could not load|fetch/i.test(m)?'No connection to the voice service right now.':'Voice error: '+(((e&&e.code)||(e&&e.message))||'unknown')};
+const vcErr=e=>{const c=(e&&(e.code||e.name))||'',t=((e&&e.message)||'').slice(0,140),m=c+' '+t,d=' Details: '+(c+' '+t).trim();
+ if(/Could not load the voice engine/.test(m))return 'The voice engine could not be downloaded. Check your connection.'+d;
+ if(/PERMISSION|NotAllowed|DEVICES_NOT_FOUND|NotFound/.test(m))return 'Microphone access was blocked or not found. Allow the microphone for this site in your browser settings, then try again.'+d;
+ if(/vendor key|VENDOR_KEY|APP_ID|INVALID_APP|DYNAMIC_KEY|dynamic use static|token/i.test(m))return 'Agora refused the connection. The App ID may be wrong, or the Agora project may require tokens. Use a project that is set to App ID only.'+d;
+ if(/NETWORK|WS_ABORT|GATEWAY|fetch/i.test(m))return 'No connection to the voice service right now.'+d;
+ return 'Voice error.'+d};
 const vcLoad=()=>window.AgoraRTC?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://download.agora.io/sdk/release/AgoraRTC_N-4.22.2.js';s.onload=ok;s.onerror=()=>no(new Error('Could not load the voice engine'));document.head.appendChild(s)});
 async function vcClean(){
  try{if(VC.tr){VC.tr.stop();VC.tr.close()}}catch(e){}
