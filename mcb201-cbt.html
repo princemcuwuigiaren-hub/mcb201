@@ -368,7 +368,7 @@ function grp(){
  <button class="tile" data-a="go" data-v="lb"><span class="ic">${IC.trophy}</span><span><b>Leaderboard</b><span class="mu sm">Ranked by total score and accuracy</span></span></button>
  <button class="tile" data-a="go" data-v="chat"><span class="ic">${IC.chat}</span><span><b>Group chat</b><span class="mu sm">Live messages, private to your group</span></span></button>
  <button class="tile" data-a="go" data-v="${glive()?'gq':'gnew'}"><span class="ic">${IC.users}</span><span><b>Group quiz</b><span class="mu sm">${glive()?'A session is live. Tap to join':'Start a shared session with your group'}</span></span></button>
- <button class="tile" data-a="go" data-v="vc"><span class="ic">${IC.phone}</span><span><b>In-app voice room</b><span class="mu sm">${VC.on?'You are in the room':vcId()?'Talk with your group inside the app':'Add your Daily room link in Settings'}</span></span></button>
+ ${VOICE_ROOM?` <button class="tile" data-a="go" data-v="vc"><span class="ic">${IC.phone}</span><span><b>In-app voice room</b><span class="mu sm">${VC.on?'You are in the room':vcId()?'Talk with your group inside the app':'Add your Daily room link in Settings'}</span></span></button>`:''}
  <button class="tile" data-a="voice"><span class="ic">${IC.phone}</span><span><b>Join voice call</b><span class="mu sm">${f.voice?'Opens your saved group link':'Add a WhatsApp or Meet link in Settings'}</span></span></button>
  <button class="tile" data-a="go" data-v="gset"><span class="ic">${IC.users}</span><span><b>Group connection</b><span class="mu sm">Name, code and leaving the group</span></span></button>`;
 }
@@ -409,10 +409,10 @@ const settingsMore=()=>`<h3 class="sec">Voice call link</h3>
  <p class="mu sm" style="margin:0">Paste a WhatsApp group link or a Google Meet link. The Join voice call button in the Group tab opens it.</p>
  <input class="inp" id="fvo" inputmode="url" autocomplete="off" autocapitalize="off" aria-label="Voice call link" value="${esc(D.fb.voice||'')}">
  <div class="stk"><button class="btn g" data-a="vsave">Save voice link</button></div>
-  ${DAILY_URL?'':` <h3 class="sec">Voice room link</h3>
+  ${VOICE_ROOM&&!DAILY_URL?` <h3 class="sec">Voice room link</h3>
  <p class="mu sm" style="margin:0">Paste the Daily room link to turn on the in-app voice room.</p>
  <input class="inp" id="fdl" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Voice room link" value="${esc(D.fb.daily||'')}">
- <div class="stk"><button class="btn g" data-a="dsave">Save room link</button></div>`}
+ <div class="stk"><button class="btn g" data-a="dsave">Save room link</button></div>`:''}
  <h3 class="sec">Group and leaderboard</h3>
  <button class="tile" data-a="go" data-v="gset"><span class="ic">${IC.users}</span><span><b>Group connection</b><span class="mu sm">${D.fb.g?esc(D.fb.g.name)+', code '+D.fb.g.code:'Display name and group code'}</span></span></button>`;
 const mkCode=()=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',r=crypto.getRandomValues(new Uint8Array(6));return Array.from(r,x=>A[x%A.length]).join('')};
@@ -714,7 +714,7 @@ document.addEventListener('click',async e=>{
 addEventListener('online',()=>gflush());
 setInterval(()=>{const e=$('#gt2'),s=gstate();if(e&&s)e.textContent=fmt(Math.ceil(s.left/1000))},250);
 
-const DAILY_URL='https://princemcuwuigiaren.daily.co/mcb201-study';
+const VOICE_ROOM=false,DAILY_URL='';
 const VC={on:false};
 const vcId=()=>DAILY_URL||D.fb.daily||'';
 function vc(){
